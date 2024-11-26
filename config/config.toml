@@ -1,2 +1,3 @@
-[common]
-data_path = "./data/"
+[analyze]
+csv_data_path = "./data/csv"
+csv_encoding = "utf-16le"

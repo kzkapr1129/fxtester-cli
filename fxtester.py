@@ -6,7 +6,6 @@ from pathlib import Path
 
 parser = argparse.ArgumentParser(description='Process some integers.')
 parser.add_argument('mode', help="処理モード")
-parser.add_argument('input', help="入力ファイル")
 
 args = parser.parse_args()
 
