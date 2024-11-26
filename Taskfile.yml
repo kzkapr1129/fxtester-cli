@@ -12,3 +12,7 @@ tasks:
   init:py:
     cmds:
       - task: env:init:py
+
+  lint:
+    cmds:
+      - autopep8 . --in-place --recursive
