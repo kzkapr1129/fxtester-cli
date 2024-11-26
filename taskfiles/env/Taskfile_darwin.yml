@@ -1,0 +1,21 @@
+version: '3'
+
+tasks:
+  init:
+    cmds:
+     - |
+      if ! ( command -v anyenv 2>&1 >/dev/null ); then
+        brew install anyenv
+      fi
+      - |
+      if ! ( command -v xz 2>&1 >/dev/null ); then
+        brew install xz
+      fi
+     - ./taskfiles/env/darwin/apply.sh
+     - anyenv install --skip-existing pyenv
+     - exec $SHELL -l
+  init:py:
+    cmds:
+     - pyenv install --skip-existing $(cat ./.python-version)
+     - pyenv local $(cat ./.python-version)
+     - pyenv rehash
