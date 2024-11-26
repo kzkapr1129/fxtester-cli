@@ -6,6 +6,7 @@ if sys.version_info >= (3, 11):
 else:
     import tomlkit
 
+
 def load_config(config_path: Path) -> dict:
     config = {}
     if config_path.is_file():
