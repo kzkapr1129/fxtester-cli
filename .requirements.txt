@@ -1,4 +1,2 @@
 tomlkit
 pandas
-autopep8
-flake8

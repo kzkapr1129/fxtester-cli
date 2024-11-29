@@ -1,5 +1,6 @@
 
 from pathlib import Path
+from common.zigzag import mark_zigzag
 import pandas as pd
 
 
@@ -16,5 +17,5 @@ class Analyzer:
         for file in file_list:
             df = pd.read_csv(file, parse_dates=["datetime"], dayfirst=False, encoding=self.csv_encoding, names=[
                              "datetime", "open", "high", "low", "close", "volume", "tick"])
-            for row in df.itertuples():
-                print(row.datetime)
+            # ジグザグを計算する
+            mark_zigzag(df)

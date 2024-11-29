@@ -11,7 +11,6 @@ args = parser.parse_args()
 
 # 設定読み込み
 config = load_config(Path("config/config.toml"))
-print(config)
 
 match args.mode:
     case 'analyze':
