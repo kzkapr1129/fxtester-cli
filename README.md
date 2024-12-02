@@ -10,6 +10,7 @@ OS: Monterey
 
 環境構築手順
 ```
+$ brew install go-task
 $ task init
 $ task init:py
 ```
