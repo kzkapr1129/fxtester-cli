@@ -1,9 +1,20 @@
+"""ジグザグ計算モジュール
+"""
+
 from pandas import DataFrame
-from pandas import Series
 import json
+from typing import Any
 
 
-def mark_zigzag(df: DataFrame):
+def mark_zigzag(df: DataFrame) -> DataFrame:
+    """ジグザグ情報をデータフレームに書き込む
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+
+    Returns:
+        DataFrame: ジグザグ情報が書き込まれたデータフレーム
+    """
     df['zigzag'] = None
     mark_zigzag_peak_to_bottom(df)
     mark_zigzag_bottom_to_peak(df)
@@ -11,6 +22,14 @@ def mark_zigzag(df: DataFrame):
 
 
 def mark_zigzag_peak_to_bottom(df):
+    """高値から安値方向へのジグザグ情報をデータフレームに書き込む
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+
+    Returns:
+        DataFrame: ジグザグ情報が書き込まれたデータフレーム
+    """
     row_index = 0
     while row_index < len(df):
         # 高値更新が止まった場所を探す
@@ -41,6 +60,14 @@ def mark_zigzag_peak_to_bottom(df):
 
 
 def mark_zigzag_bottom_to_peak(df):
+    """安値から高値方向へのジグザグ情報をデータフレームに書き込む
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+
+    Returns:
+        DataFrame: ジグザグ情報が書き込まれたデータフレーム
+    """
     row_index = 0
     while row_index < len(df):
         # 安値更新が止まった場所を探す
@@ -70,7 +97,16 @@ def mark_zigzag_bottom_to_peak(df):
         row_index = peak['index'] + 1
 
 
-def find_peak(df: DataFrame, start: int) -> dict:
+def find_peak(df: DataFrame, start: int) -> dict[str:Any]:
+    """高値更新が止まったポイントを探す
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        start (int): 検索を開始するローソク足のインデックス番号
+
+    Returns:
+        dict[str:Any]: 高値更新が止まったポイントの情報が格納された辞書データ
+    """
     if len(df) <= start:
         raise Exception("Program error")
 
@@ -132,6 +168,15 @@ def find_peak(df: DataFrame, start: int) -> dict:
 
 
 def find_bottom(df: DataFrame, start: int) -> dict:
+    """安値更新が止まったポイントを探す
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        start (int): 検索を開始するローソク足のインデックス番号
+
+    Returns:
+        dict[str:Any]: 安値更新が止まったポイントの情報が格納された辞書データ
+    """
     if len(df) <= start:
         raise Exception("Program error")
 
@@ -192,37 +237,103 @@ def find_bottom(df: DataFrame, start: int) -> dict:
     }
 
 
-def calc_box_min(df, i):
-    open = df.loc[i, 'open']
-    close = df.loc[i, 'close']
+def calc_box_min(df, i) -> float:
+    """ローソク足の実体の安値を計算する
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        i (int): ローソク足のインデックス番号
+
+    Returns:
+        float: ローソク足の実体の安値
+    """
+    open = df.loc[i, 'open'].astype(float)
+    close = df.loc[i, 'close'].astype(float)
     return min(open, close)
 
 
-def calc_box_max(df, i):
-    open = df.loc[i, 'open']
-    close = df.loc[i, 'close']
+def calc_box_max(df, i) -> float:
+    """ローソク足の実体の高値を計算する
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        i (int): ローソク足のインデックス番号
+
+    Returns:
+        float: ローソク足の実体の高値
+    """
+    open = df.loc[i, 'open'].astype(float)
+    close = df.loc[i, 'close'].astype(float)
     return max(open, close)
 
 
-def is_updated_high(df, src_index, dst_index):
+def is_updated_high(df, src_index, dst_index) -> bool:
+    """高値更新が行われたかを検査する
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        src (int): 過去のローソク足のインデックス番号
+        dst (int): 未来のローソク足のインデックス番号
+
+    Returns:
+        bool: 高値更新が行われたか否かのフラグ値
+    """
     return calc_box_max(df, src_index) < calc_box_max(df, dst_index)
 
 
 def is_updated_low(df, src_index, dst_index):
+    """安値更新が行われたかを検査する
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        src (int): 過去のローソク足のインデックス番号
+        dst (int): 未来のローソク足のインデックス番号
+
+    Returns:
+        bool: 安値更新が行われたか否かのフラグ値
+    """
     return calc_box_min(df, dst_index) < calc_box_min(df, src_index)
 
 
 def is_positive(df, i):
+    """ローソク足が陽線か検査する
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        i (int): ローソク足のインデックス番号
+
+    Returns:
+        bool: 陽線か否かのフラグ値
+    """
     open = df.loc[i, 'open']
     close = df.loc[i, 'close']
     return open < close
 
 
 def is_negative(df, i):
+    """ローソク足が陰線か検査する
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        i (int): ローソク足のインデックス番号
+
+    Returns:
+        bool: 陰線か否かのフラグ値
+    """
     open = df.loc[i, 'open']
     close = df.loc[i, 'close']
     return close < open
 
 
 def contains(df, src_index, dst_index):
+    """未来のローソク足が過去のローソク足に包含されているか検査する
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+        src_index (int): 過去のローソク足のインデックス番号
+        dst_index (int): 未来のローソク足のインデックス番号
+
+    Returns:
+        bool: 未来のローソク足が過去のローソク足に包含されているか否かのフラグ値
+    """
     return calc_box_min(df, src_index) <= calc_box_min(df, dst_index) and calc_box_max(df, dst_index) <= calc_box_max(df, src_index)

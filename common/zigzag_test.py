@@ -5,6 +5,7 @@ import os
 current_dir = os.path.dirname(os.path.abspath(__file__))
 test_data_path = f"{current_dir}/test/USDJPYDaily.csv"
 
+
 def test_mark_zigzag():
     test_data_expect = [
         0, 2, 5, 6, 9, 11, 14, 15, 17, 18, 22,
@@ -17,8 +18,9 @@ def test_mark_zigzag():
         215, 220, 221, 224, 228, 229, 231
     ]
     result = mark_zigzag(pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=[
-                        "datetime", "open", "high", "low", "close", "volume", "tick"])).dropna(subset=["zigzag"])
+        "datetime", "open", "high", "low", "close", "volume", "tick"])).dropna(subset=["zigzag"])
     assert test_data_expect == result.index.tolist()
+
 
 def test_mark_zigzag_bottom_to_peak():
     test_data_expect = [
@@ -29,10 +31,11 @@ def test_mark_zigzag_bottom_to_peak():
         220, 224, 229
     ]
     df = pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=[
-                        "datetime", "open", "high", "low", "close", "volume", "tick"])
+        "datetime", "open", "high", "low", "close", "volume", "tick"])
     df['zigzag'] = None
     mark_zigzag_bottom_to_peak(df)
     assert test_data_expect == df.dropna(subset=["zigzag"]).index.tolist()
+
 
 def test_mark_zigzag_peak_to_bottom():
     test_data_expect = [
@@ -42,7 +45,7 @@ def test_mark_zigzag_peak_to_bottom():
         192, 198, 201, 207, 215, 221, 228, 231,
     ]
     df = pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=[
-                        "datetime", "open", "high", "low", "close", "volume", "tick"])
+        "datetime", "open", "high", "low", "close", "volume", "tick"])
     df['zigzag'] = None
     mark_zigzag_peak_to_bottom(df)
     assert test_data_expect == df.dropna(subset=["zigzag"]).index.tolist()
