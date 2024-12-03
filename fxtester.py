@@ -15,6 +15,8 @@ def main():
     """
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('mode', help="処理モード")
+    parser.add_argument("-i", "--input", type=str, help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)", required=True)
+    parser.add_argument("-o", "--output", type=str, help="出力ファイルのパス", required=True)
 
     args = parser.parse_args()
 
@@ -25,7 +27,7 @@ def main():
         case 'analyze':
             analyzer = importlib.import_module(
                 "analyze.analyze").Analyzer(config)
-            analyzer.main()
+            analyzer.main(input_path=Path(args.input), output_path=args.output)
         case _:
             print(f"予期しないモードが指定されました: {args.mode}")
             sys.exit()
