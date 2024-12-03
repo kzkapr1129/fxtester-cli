@@ -15,7 +15,7 @@ def mark_zigzag(df: DataFrame) -> DataFrame:
     Returns:
         DataFrame: ジグザグ情報が書き込まれたデータフレーム
     """
-    df['zigzag'] = None
+    df['zigzag'] = False
     mark_zigzag_peak_to_bottom(df)
     mark_zigzag_bottom_to_peak(df)
     return df
@@ -49,12 +49,12 @@ def mark_zigzag_peak_to_bottom(df):
         # 速度を計算
         velocity = y / x
 
-        df.loc[peak['index'], 'zigzag'] = json.dumps({
-            "kind": "peak",
-            "to": bottom['index'],
-            "velocity": velocity,
-            "delta": y,
-        })
+        i = peak['index']
+        df.loc[i, 'zigzag'] = True
+        df.loc[i, 'zigzag-kind'] = "peak"
+        df.loc[i, 'zigzag-to'] = bottom['index']
+        df.loc[i, 'zigzag-velocity'] = velocity
+        df.loc[i, 'zigzag-delta'] = y
 
         row_index = bottom['index'] + 1
 
@@ -87,12 +87,12 @@ def mark_zigzag_bottom_to_peak(df):
         # 速度を計算
         velocity = y / x
 
-        df.loc[bottom['index'], 'zigzag'] = json.dumps({
-            "kind": "bottom",
-            "to": peak['index'],
-            "velocity": velocity,
-            "delta": y,
-        })
+        i = bottom['index']
+        df.loc[i, 'zigzag'] = True
+        df.loc[i, 'zigzag-kind'] = "bottom"
+        df.loc[i, 'zigzag-to'] = peak['index']
+        df.loc[i, 'zigzag-velocity'] = velocity
+        df.loc[i, 'zigzag-delta'] = y
 
         row_index = peak['index'] + 1
 

@@ -17,9 +17,9 @@ def test_mark_zigzag():
         194, 198, 200, 201, 203, 207, 208,
         215, 220, 221, 224, 228, 229, 231
     ]
-    result = mark_zigzag(pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=[
-        "datetime", "open", "high", "low", "close", "volume", "tick"])).dropna(subset=["zigzag"])
-    assert test_data_expect == result.index.tolist()
+    df = mark_zigzag(pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=[
+        "datetime", "open", "high", "low", "close", "volume", "tick"]))
+    assert test_data_expect == df[df['zigzag']].index.tolist()
 
 
 def test_mark_zigzag_bottom_to_peak():
@@ -32,9 +32,9 @@ def test_mark_zigzag_bottom_to_peak():
     ]
     df = pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=[
         "datetime", "open", "high", "low", "close", "volume", "tick"])
-    df['zigzag'] = None
+    df['zigzag'] = False
     mark_zigzag_bottom_to_peak(df)
-    assert test_data_expect == df.dropna(subset=["zigzag"]).index.tolist()
+    assert test_data_expect == df[df['zigzag']].index.tolist()
 
 
 def test_mark_zigzag_peak_to_bottom():
@@ -46,6 +46,6 @@ def test_mark_zigzag_peak_to_bottom():
     ]
     df = pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=[
         "datetime", "open", "high", "low", "close", "volume", "tick"])
-    df['zigzag'] = None
+    df['zigzag'] = False
     mark_zigzag_peak_to_bottom(df)
-    assert test_data_expect == df.dropna(subset=["zigzag"]).index.tolist()
+    assert test_data_expect == df[df['zigzag']].index.tolist()
