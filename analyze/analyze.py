@@ -3,6 +3,7 @@
 
 from pathlib import Path
 from common.zigzag import mark_zigzag
+from common.sma import mark_sma
 import pandas as pd
 import json
 
@@ -14,8 +15,6 @@ class Analyzer:
 
     Attributes:
         config (dict[str,Any]): 設定情報が格納された辞書データ
-        csv_data_path (str): 入力ファイルが格納されたフォルダへのパス
-        csv_encoding (str): csvファイルのエンコーディング
     """
 
     def __init__(self, config):
@@ -47,6 +46,9 @@ class Analyzer:
                              "datetime", "open", "high", "low", "close", "volume", "tick"])
             # ジグザグを計算する
             mark_zigzag(df)
+            # 単純移動平均線を計算する
+            mark_sma(df)
+
             json_array.append(json.loads(df.to_json(orient="records")))
 
         with open(output_path, mode='w') as f:
