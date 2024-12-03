@@ -4,6 +4,7 @@
 from pathlib import Path
 from common.zigzag import mark_zigzag
 import pandas as pd
+import json
 
 
 class Analyzer:
@@ -32,6 +33,7 @@ class Analyzer:
 
         解析処理のメインとなる処理を実行する
         """
+        json_array = []
         # 入力ファイル(.csv)の読み込み
         file_list = [file for file in self.csv_data_path.glob(
             "*.csv") if file.is_file()]
@@ -40,3 +42,9 @@ class Analyzer:
                              "datetime", "open", "high", "low", "close", "volume", "tick"])
             # ジグザグを計算する
             mark_zigzag(df)
+            json_array.append(json.loads(df.to_json(orient="records")))
+
+        # 解析結果の出力
+        final_json = json.dumps(json_array, indent=4, ensure_ascii=False)
+        print(final_json)
+
