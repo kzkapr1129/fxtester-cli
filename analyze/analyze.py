@@ -37,7 +37,8 @@ class Analyzer:
             file_list = [input_path]
         else:
             # フォルダが指定された場合
-            file_list = [file for file in input_path.glob("*.csv") if file.is_file()]
+            file_list = [file for file in input_path.glob(
+                "*.csv") if file.is_file()]
 
         json_array = []
         # 入力ファイル(.csv)の読み込み
@@ -48,8 +49,6 @@ class Analyzer:
             mark_zigzag(df)
             json_array.append(json.loads(df.to_json(orient="records")))
 
-
         with open(output_path, mode='w') as f:
             # 解析結果の出力
             f.write(json.dumps(json_array, indent=4, ensure_ascii=False))
-

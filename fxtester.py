@@ -15,8 +15,10 @@ def main():
     """
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('mode', help="処理モード")
-    parser.add_argument("-i", "--input", type=str, help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)", required=True)
-    parser.add_argument("-o", "--output", type=str, help="出力ファイルのパス", required=True)
+    parser.add_argument("-i", "--input", type=str,
+                        help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)", required=True)
+    parser.add_argument("-o", "--output", type=str,
+                        help="出力ファイルのパス", required=True)
 
     args = parser.parse_args()
 
