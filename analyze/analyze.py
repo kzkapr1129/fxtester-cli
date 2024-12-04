@@ -49,7 +49,7 @@ class Analyzer:
             # 単純移動平均線を計算する
             mark_sma(df)
 
-            json_array.append(json.loads(df.to_json(orient="records")))
+            json_array.append(json.loads(df.to_json(orient="records", date_format="iso", date_unit="s")))
 
         with open(output_path, mode='w') as f:
             # 解析結果の出力
