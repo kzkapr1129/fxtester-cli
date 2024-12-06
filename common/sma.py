@@ -12,6 +12,5 @@ def mark_sma(df: DataFrame, average=25) -> DataFrame:
     Returns:
         DataFrame: 単純移動平均線が書き込まれたデータフレーム
     """
-    close = df['close']
-    df['sma'] = close.rolling(window=average, min_periods=average).mean()
+    df[f'sma'] = df['close'].rolling(window=average, min_periods=average).mean()
     return df
