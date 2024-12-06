@@ -44,7 +44,7 @@ class Analyzer:
         # 入力ファイル(.csv)の読み込み
         for file in file_list:
             df = pd.read_csv(file, parse_dates=["datetime"], dayfirst=False, encoding=csv_encoding, names=[
-                             "datetime", "open", "high", "low", "close", "volume", "tick"])
+                             "datetime", "open", "high", "low", "close", "tick", "volume"])
             # ジグザグを計算する
             mark_zigzag(df)
             # 単純移動平均線を計算する

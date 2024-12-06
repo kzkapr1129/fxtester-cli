@@ -15,4 +15,4 @@ def show(df: DataFrame, title: str = ""):
     ]
 
     mpf.plot(dfc, title=title, addplot=apds, type="candle",
-             style='yahoo', ylabel='Price', volume=True)
+             style='yahoo', ylabel='Price', volume=False)
