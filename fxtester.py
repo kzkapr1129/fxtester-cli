@@ -20,6 +20,7 @@ def main():
     parser.add_argument("-o", "--output", type=str,
                         help="出力ファイルのパス", required=True)
     parser.add_argument("--show-graph", action='store_true')
+    parser.add_argument("--sma", type=int, nargs='*')
 
     args = parser.parse_args()
 
@@ -31,7 +32,7 @@ def main():
             analyzer = importlib.import_module(
                 "analyze.analyze").Analyzer(config)
             analyzer.main(input_path=Path(args.input),
-                          output_path=args.output, show_graph=args.show_graph)
+                          output_path=args.output, show_graph=args.show_graph, sma=args.sma)
         case _:
             print(f"予期しないモードが指定されました: {args.mode}")
             sys.exit()

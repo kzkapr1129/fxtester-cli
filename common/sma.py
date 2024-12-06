@@ -3,7 +3,7 @@
 from pandas import DataFrame
 
 
-def mark_sma(df: DataFrame, average=25) -> DataFrame:
+def mark_sma(df: DataFrame, averages: list[int]) -> DataFrame:
     """単純移動平均線をデータフレームに書き込む
 
     Args:
@@ -12,6 +12,7 @@ def mark_sma(df: DataFrame, average=25) -> DataFrame:
     Returns:
         DataFrame: 単純移動平均線が書き込まれたデータフレーム
     """
-    df['sma'] = df['close'].rolling(
-        window=average, min_periods=average).mean()
+    for average in averages:
+        df[f'sma-{average}'] = df['close'].rolling(
+            window=average, min_periods=average).mean()
     return df

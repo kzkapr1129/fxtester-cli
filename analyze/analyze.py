@@ -26,7 +26,7 @@ class Analyzer:
         """
         self.config = config
 
-    def main(self, input_path: Path, output_path: str, show_graph: bool, csv_encoding: str = "utf-16le"):
+    def main(self, input_path: Path, output_path: str, show_graph: bool, sma: list[int], csv_encoding: str = "utf-16le"):
         """メイン処理
 
         解析処理のメインとなる処理を実行する
@@ -48,10 +48,10 @@ class Analyzer:
             # ジグザグを計算する
             mark_zigzag(df)
             # 単純移動平均線を計算する
-            mark_sma(df)
+            mark_sma(df, sma)
 
             if show_graph:
-                g.show(df, title=file.name)
+                g.show(df, title=file.name, sma=sma)
 
             json_array.append(json.loads(df.to_json(
                 orient="records", date_format="iso", date_unit="s")))
