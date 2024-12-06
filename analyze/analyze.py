@@ -4,6 +4,7 @@
 from pathlib import Path
 from common.zigzag import mark_zigzag
 from common.sma import mark_sma
+import common.graph as g
 import pandas as pd
 import json
 
@@ -25,7 +26,7 @@ class Analyzer:
         """
         self.config = config
 
-    def main(self, input_path: Path, output_path: str, csv_encoding: str = "utf-16le"):
+    def main(self, input_path: Path, output_path: str, show_graph: bool, csv_encoding: str = "utf-16le"):
         """メイン処理
 
         解析処理のメインとなる処理を実行する
@@ -49,7 +50,11 @@ class Analyzer:
             # 単純移動平均線を計算する
             mark_sma(df)
 
-            json_array.append(json.loads(df.to_json(orient="records", date_format="iso", date_unit="s")))
+            if show_graph:
+                g.show(df, title=file.name)
+
+            json_array.append(json.loads(df.to_json(
+                orient="records", date_format="iso", date_unit="s")))
 
         with open(output_path, mode='w') as f:
             # 解析結果の出力

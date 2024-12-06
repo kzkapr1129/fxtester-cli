@@ -19,6 +19,7 @@ def main():
                         help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)", required=True)
     parser.add_argument("-o", "--output", type=str,
                         help="出力ファイルのパス", required=True)
+    parser.add_argument("--show-graph", action='store_true')
 
     args = parser.parse_args()
 
@@ -29,7 +30,8 @@ def main():
         case 'analyze':
             analyzer = importlib.import_module(
                 "analyze.analyze").Analyzer(config)
-            analyzer.main(input_path=Path(args.input), output_path=args.output)
+            analyzer.main(input_path=Path(args.input),
+                          output_path=args.output, show_graph=args.show_graph)
         case _:
             print(f"予期しないモードが指定されました: {args.mode}")
             sys.exit()
