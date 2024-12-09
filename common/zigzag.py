@@ -54,6 +54,7 @@ def mark_zigzag_peak_to_bottom(df):
         df.loc[i, 'zigzag-to'] = bottom['index']
         df.loc[i, 'zigzag-velocity'] = velocity
         df.loc[i, 'zigzag-delta'] = y
+        df.loc[i, 'zigzag-peak-price'] = peak['box_max']
 
         row_index = bottom['index'] + 1
 
@@ -92,6 +93,7 @@ def mark_zigzag_bottom_to_peak(df):
         df.loc[i, 'zigzag-to'] = peak['index']
         df.loc[i, 'zigzag-velocity'] = velocity
         df.loc[i, 'zigzag-delta'] = y
+        df.loc[i, 'zigzag-bottom-price'] = bottom['box_min']
 
         row_index = peak['index'] + 1
 
