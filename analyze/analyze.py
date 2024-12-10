@@ -56,6 +56,7 @@ class Analyzer:
             json_array.append(json.loads(df.to_json(
                 orient="records", date_format="iso", date_unit="s")))
 
-        with open(output_path, mode='w') as f:
-            # 解析結果の出力
-            f.write(json.dumps(json_array, indent=4, ensure_ascii=False))
+        if output_path != None and output_path != "":
+            with open(output_path, mode='w') as f:
+                # 解析結果の出力
+                f.write(json.dumps(json_array, indent=4, ensure_ascii=False))

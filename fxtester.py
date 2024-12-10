@@ -6,6 +6,9 @@ import sys
 import importlib
 from config.config import load_config
 from pathlib import Path
+import logging
+
+logger = logging.getLogger("analyze")
 
 
 def main():
@@ -16,9 +19,9 @@ def main():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('mode', help="処理モード", choices=["analyze"])
     parser.add_argument("-i", "--input", type=str,
-                        help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)", required=True)
+                        help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
     parser.add_argument("-o", "--output", type=str,
-                        help="出力ファイルのパス", required=True)
+                        help="出力ファイルのパス")
     parser.add_argument("--show-graph", action='store_true')
     parser.add_argument("--sma", type=int, nargs='*')
 
@@ -29,6 +32,9 @@ def main():
 
     match args.mode:
         case 'analyze':
+            if args.input == None:
+                logger.error("-i or --input is mandatory")
+                return
             analyzer = importlib.import_module(
                 "analyze.analyze").Analyzer(config)
             analyzer.main(input_path=Path(args.input),
