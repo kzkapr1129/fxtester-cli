@@ -22,7 +22,7 @@ def show(df: DataFrame, sma: list[int]=[], title: str = ""):
     apds = []
 
     # 単純移動平均線のマーカー追加
-    for i, s in enumerate(sma):
+    for i, s in enumerate(sma if sma != None else []):
         color = sma_colors[i % len(sma_colors)]
         apds.append(mpf.make_addplot(dfc[f'sma-{s}'], color=color, label=f'SMA {s}'))
 
