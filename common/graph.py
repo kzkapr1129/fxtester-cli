@@ -28,11 +28,17 @@ def show(df: DataFrame, sma: list[int] = [], title: str = ""):
         apds.append(mpf.make_addplot(
             dfc[f'sma-{s}'], color=color, label=f'SMA {s}'))
 
-    # ジグザグのマーカー追加
-    apds.append(mpf.make_addplot(
-        df['zigzag-peak-price'], type='scatter', markersize=10, marker='v', color='red'))
-    apds.append(mpf.make_addplot(
-        df['zigzag-bottom-price'], type='scatter', markersize=10, marker='^', color='blue'))
+    zigzag_inputs = [
+        {"name": 'zigzag-peak-price', "marker": "v", "color": 'red'},
+        {"name": 'zigzag-bottom-price', "marker": "^", "color": 'blue'}
+    ]
+
+    # ジグザグのマーカーを追加
+    for zi in zigzag_inputs:
+        if zi["name"] in df.columns:
+            zigzag_prices = df[zi["name"]]
+            apds.append(mpf.make_addplot(zigzag_prices, type='scatter',
+                        markersize=10, marker=zi["marker"], color=zi["color"]))
 
     mpf.plot(dfc, title=title, addplot=apds, type="candle",
              style='yahoo', ylabel='Price', volume=False)
