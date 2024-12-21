@@ -41,7 +41,7 @@ def mark_zigzag2(df: DataFrame) -> DataFrame:
         # 経過時間
         dx = peak['index'] - bottom['index']
         # Y軸のΔ
-        dy = peak['box_max'] - bottom['box_min']
+        dy = peak['box_max'] - bottom['box_min'] if dx != 0 else 0
         # 速度を計算
         velocity = dy / dx if dx != 0 else 0
         # マーク付けを行うデータのインデックス取得
@@ -58,7 +58,7 @@ def mark_zigzag2(df: DataFrame) -> DataFrame:
         # 経過時間
         dx = bottom['index'] - peak['index']
         # Y軸のΔ
-        dy = bottom['box_min'] - peak['box_max']
+        dy = bottom['box_min'] - peak['box_max'] if dx != 0 else 0
         # 速度を計算
         velocity = dy / dx if dx != 0 else 0
         # マーク付けを行うデータのインデックス取得
