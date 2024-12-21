@@ -37,45 +37,57 @@ def mark_zigzag2(df: DataFrame) -> DataFrame:
     peak = find_peak(df, 0)
     bottom = find_bottom(df, 0)
 
-    def mark_peak(peak):
+    def mark_peak(peak, bottom):
         # 経過時間
-        x = bottom['index'] - peak['index']
+        dx = peak['index'] - bottom['index']
         # Y軸のΔ
-        y = bottom['box_min'] - peak['box_max']
+        dy = peak['box_max'] - bottom['box_min']
         # 速度を計算
-        velocity = y / x
+        velocity = dy / dx if dx != 0 else 0
         # マーク付けを行うデータのインデックス取得
         i = peak['index']
         # インデックスの位置にマーク付けを行う
         df.loc[i, 'zigzag'] = True
         df.loc[i, 'zigzag-kind'] = "peak"
-        df.loc[i, 'zigzag-to'] = bottom['index']
+        df.loc[i, 'zigzag-from'] = bottom['index']
         df.loc[i, 'zigzag-velocity'] = velocity
-        df.loc[i, 'zigzag-delta'] = y
+        df.loc[i, 'zigzag-delta'] = dy
         df.loc[i, 'zigzag-peak-price'] = peak['box_max']
 
-    def mark_bottom(bottom):
+    def mark_bottom(bottom, peak):
         # 経過時間
-        x = peak['index'] - bottom['index']
+        dx = bottom['index'] - peak['index']
         # Y軸のΔ
-        y = peak['box_max'] - bottom['box_min']
+        dy = bottom['box_min'] - peak['box_max']
         # 速度を計算
-        velocity = y / x
+        velocity = dy / dx if dx != 0 else 0
         # マーク付けを行うデータのインデックス取得
         i = bottom['index']
         # インデックスの位置にマーク付けを行う
         df.loc[i, 'zigzag'] = True
         df.loc[i, 'zigzag-kind'] = "bottom"
-        df.loc[i, 'zigzag-to'] = peak['index']
+        df.loc[i, 'zigzag-from'] = peak['index']
         df.loc[i, 'zigzag-velocity'] = velocity
-        df.loc[i, 'zigzag-delta'] = y
+        df.loc[i, 'zigzag-delta'] = dy
         df.loc[i, 'zigzag-bottom-price'] = bottom['box_min']
 
+    # 仮のジグザグを用意
+    first = {
+        'index': 0,
+        'box_max': calc_box_max(df, 0),
+        'box_min': calc_box_min(df, 0),
+    }
+
     row_index = 0
+    last_bottom = None
     # ボトムが最初に見つかったかチェックする
     if bottom['index'] < peak['index']:
         row_index = bottom['start']
-        mark_bottom(bottom)
+        mark_bottom(bottom, first)  # インデックス0を仮のピークとする
+        last_bottom = bottom
+    else:
+        # インデックス0を仮のボトムとする
+        last_bottom = first
 
     # ピークとボトムを順番に探してマーク付けする
     while row_index + 1 < len(df):
@@ -85,11 +97,12 @@ def mark_zigzag2(df: DataFrame) -> DataFrame:
         bottom = find_bottom(df, peak['start'])
 
         # ピークとボトムのマーク付け
-        mark_peak(peak)
-        mark_bottom(bottom)
+        mark_peak(peak, last_bottom)
+        mark_bottom(bottom, peak)
 
         # 次の探索開始位置を設定
         row_index = bottom['start']
+        last_bottom = bottom
 
     return df
 
