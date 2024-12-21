@@ -20,6 +20,80 @@ def mark_zigzag(df: DataFrame) -> DataFrame:
     return df
 
 
+def mark_zigzag2(df: DataFrame) -> DataFrame:
+    """ジグザグ情報をデータフレームに書き込む
+       v1との差分
+       - ピークとボトムが交互にマーク付けされない不具合解消
+
+    Args:
+        df (DataFrame): ローソク足の情報が格納されたデータフレーム
+
+    Returns:
+        DataFrame: ジグザグ情報が書き込まれたデータフレーム
+    """
+    df['zigzag'] = False
+
+    # ピークとボトムのどちらが最初に見つからるかをチェックする
+    peak = find_peak(df, 0)
+    bottom = find_bottom(df, 0)
+
+    def mark_peak(peak):
+        # 経過時間
+        x = bottom['index'] - peak['index']
+        # Y軸のΔ
+        y = bottom['box_min'] - peak['box_max']
+        # 速度を計算
+        velocity = y / x
+        # マーク付けを行うデータのインデックス取得
+        i = peak['index']
+        # インデックスの位置にマーク付けを行う
+        df.loc[i, 'zigzag'] = True
+        df.loc[i, 'zigzag-kind'] = "peak"
+        df.loc[i, 'zigzag-to'] = bottom['index']
+        df.loc[i, 'zigzag-velocity'] = velocity
+        df.loc[i, 'zigzag-delta'] = y
+        df.loc[i, 'zigzag-peak-price'] = peak['box_max']
+
+    def mark_bottom(bottom):
+        # 経過時間
+        x = peak['index'] - bottom['index']
+        # Y軸のΔ
+        y = peak['box_max'] - bottom['box_min']
+        # 速度を計算
+        velocity = y / x
+        # マーク付けを行うデータのインデックス取得
+        i = bottom['index']
+        # インデックスの位置にマーク付けを行う
+        df.loc[i, 'zigzag'] = True
+        df.loc[i, 'zigzag-kind'] = "bottom"
+        df.loc[i, 'zigzag-to'] = peak['index']
+        df.loc[i, 'zigzag-velocity'] = velocity
+        df.loc[i, 'zigzag-delta'] = y
+        df.loc[i, 'zigzag-bottom-price'] = bottom['box_min']
+
+    row_index = 0
+    # ボトムが最初に見つかったかチェックする
+    if bottom['index'] < peak['index']:
+        row_index = bottom['start']
+        mark_bottom(bottom)
+
+    # ピークとボトムを順番に探してマーク付けする
+    while row_index + 1 < len(df):
+        # ピークを探す
+        peak = find_peak(df, row_index)
+        # ボトムを探す
+        bottom = find_bottom(df, peak['start'])
+
+        # ピークとボトムのマーク付け
+        mark_peak(peak)
+        mark_bottom(bottom)
+
+        # 次の探索開始位置を設定
+        row_index = bottom['start']
+
+    return df
+
+
 def mark_zigzag_peak_to_bottom(df):
     """高値から安値方向へのジグザグ情報をデータフレームに書き込む
 

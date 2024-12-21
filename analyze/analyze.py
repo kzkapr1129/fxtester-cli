@@ -2,7 +2,7 @@
 """
 
 from pathlib import Path
-from common.zigzag import mark_zigzag
+from common.zigzag import mark_zigzag2
 from common.sma import mark_sma
 import common.graph as g
 import pandas as pd
@@ -46,7 +46,7 @@ class Analyzer:
             df = pd.read_csv(file, parse_dates=["datetime"], dayfirst=False, encoding=csv_encoding, names=[
                              "datetime", "open", "high", "low", "close", "tick", "volume"])
             # ジグザグを計算する
-            mark_zigzag(df)
+            mark_zigzag2(df)
             # 単純移動平均線を計算する
             mark_sma(df, sma)
 
