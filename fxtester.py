@@ -16,19 +16,34 @@ def main():
 
     FXTester-cliのエントリーポイントとなる関数
     """
-    parser = argparse.ArgumentParser(description='Process some integers.')
-    parser.add_argument('mode', help="処理モード", choices=["analyze"])
-    parser.add_argument("-i", "--input", type=str,
-                        help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
-    parser.add_argument("-o", "--output", type=str,
-                        help="出力ファイルのパス")
-    parser.add_argument("--show-graph", action='store_true')
-    parser.add_argument("--sma", type=int, nargs='*')
-    parser.add_argument("--ichimoku", action="store_true")
-    parser.add_argument("--zigzag", action="store_true")
+    # 共通パーサーの初期化
+    common_parser = argparse.ArgumentParser(add_help=False)
+    common_parser.add_argument(
+        "-c", "--config", default="config/config.toml", help="設定ファイルのパスを指定する")
 
+    # サブコマンドパーサーの初期化
+    parser = argparse.ArgumentParser(description="", add_help=False)
+    sub_parser = parser.add_subparsers(
+        dest="mode", required=True, help="サブコマンド")
+
+    # analyzeパーサーの初期化
+    analyze_parser = sub_parser.add_parser(
+        "analyze", help="ローソク足の特徴を解析する", parents=[common_parser])
+    analyze_parser.add_argument("-i", "--input", type=str,
+                                help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
+    analyze_parser.add_argument("-o", "--output", type=str,
+                                help="出力ファイルのパス")
+    analyze_parser.add_argument(
+        "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
+    analyze_parser.add_argument(
+        "--sma", type=int, nargs='*', help="単純移動平均線の平均値を指定する")
+    analyze_parser.add_argument(
+        "--ichimoku", action="store_true", help="一目均衡表を計算する")
+    analyze_parser.add_argument(
+        "--zigzag", action="store_true", help="ジグザグを検出する")
+
+    # コマンドのパース
     args = parser.parse_args()
-    print(args)
 
     # 設定読み込み
     config = load_config(Path("config/config.toml"))
