@@ -8,7 +8,7 @@ from config.config import load_config
 from pathlib import Path
 import logging
 
-logger = logging.getLogger("analyze")
+logger = logging.getLogger("fxtester")
 
 
 def main():
@@ -26,20 +26,20 @@ def main():
     sub_parser = parser.add_subparsers(
         dest="mode", required=True, help="サブコマンド")
 
-    # analyzeパーサーの初期化
-    analyze_parser = sub_parser.add_parser(
-        "analyze", help="ローソク足の特徴を解析する", parents=[common_parser])
-    analyze_parser.add_argument("-i", "--input", type=str,
+    # extractパーサーの初期化
+    extract_parser = sub_parser.add_parser(
+        "extract", help="ローソク足の特徴を抽出する", parents=[common_parser])
+    extract_parser.add_argument("-i", "--input", type=str,
                                 help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
-    analyze_parser.add_argument("-o", "--output", type=str,
+    extract_parser.add_argument("-o", "--output", type=str,
                                 help="出力ファイルのパス")
-    analyze_parser.add_argument(
+    extract_parser.add_argument(
         "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
-    analyze_parser.add_argument(
+    extract_parser.add_argument(
         "--sma", type=int, nargs='*', help="単純移動平均線の平均値を指定する")
-    analyze_parser.add_argument(
+    extract_parser.add_argument(
         "--ichimoku", action="store_true", help="一目均衡表を計算する")
-    analyze_parser.add_argument(
+    extract_parser.add_argument(
         "--zigzag", action="store_true", help="ジグザグを検出する")
 
     # コマンドのパース
@@ -49,13 +49,13 @@ def main():
     config = load_config(Path("config/config.toml"))
 
     match args.mode:
-        case 'analyze':
+        case 'extract':
             if args.input == None:
                 logger.error("-i or --input is mandatory")
                 return
-            analyzer = importlib.import_module(
-                "analyze.analyze").Analyzer(config)
-            analyzer.main(input_path=Path(args.input),
+            extractor = importlib.import_module(
+                "extract.extract").Extractor(config)
+            extractor.main(input_path=Path(args.input),
                           output_path=args.output,
                           show_graph=args.show_graph,
                           sma=args.sma,

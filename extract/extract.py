@@ -1,4 +1,4 @@
-"""解析モジュール
+"""抽出モジュール
 """
 
 from pathlib import Path
@@ -10,8 +10,8 @@ import pandas as pd
 import json
 
 
-class Analyzer:
-    """解析クラス
+class Extractor:
+    """抽出クラス
 
     ローソク足配列を解析し検査に有用なデータを抽出または作成を行い結果を出力する
 
@@ -30,7 +30,7 @@ class Analyzer:
     def main(self, input_path: Path, output_path: str, show_graph: bool, sma: list[int], enable_ichimoku: bool = False, enable_zigzag: bool = False, csv_encoding: str = "utf-16le"):
         """メイン処理
 
-        解析処理のメインとなる処理を実行する
+        抽出処理のメインとなる処理を実行する
         """
         # ファイル直接指定かフォルダ指定かチェックする
         if input_path.is_file():
@@ -63,5 +63,5 @@ class Analyzer:
 
         if output_path != None and output_path != "":
             with open(output_path, mode='w') as f:
-                # 解析結果の出力
+                # 抽出結果の出力
                 f.write(json.dumps(json_array, indent=4, ensure_ascii=False))
