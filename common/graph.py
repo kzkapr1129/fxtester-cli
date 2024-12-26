@@ -3,7 +3,8 @@
 import mplfinance as mpf
 from pandas import DataFrame
 import pandas as pd
-import numpy as np
+import japanize_matplotlib
+import matplotlib.pyplot as plt
 
 sma_colors = [
     'blue',
@@ -28,6 +29,13 @@ def show(df: DataFrame, sma: list[int] = [], title: str = ""):
         apds.append(mpf.make_addplot(
             dfc[f'sma-{s}'], color=color, label=f'SMA {s}'))
 
+    if "ichimoku_senkou_span_1" in df.columns:
+        apds.append(mpf.make_addplot(
+            dfc['ichimoku_senkou_span_1'], color='sandybrown', label=f'先行スパン1'))
+    if "ichimoku_senkou_span_2" in df.columns:
+        apds.append(mpf.make_addplot(
+            dfc['ichimoku_senkou_span_2'], color='thistle', label=f'先行スパン2'))
+
     zigzag_inputs = [
         {"name": 'zigzag-peak-price', "marker": "v", "color": 'red'},
         {"name": 'zigzag-bottom-price', "marker": "^", "color": 'blue'}
@@ -40,5 +48,12 @@ def show(df: DataFrame, sma: list[int] = [], title: str = ""):
             apds.append(mpf.make_addplot(zigzag_prices, type='scatter',
                         markersize=10, marker=zi["marker"], color=zi["color"]))
 
+    s = mpf.make_mpf_style(
+        # 基本はdefaultの設定値を使う。
+        base_mpf_style='default',
+        # font.family を matplotlibに設定されている値にする。
+        rc={"font.family": plt.rcParams["font.family"][0]},
+    )
+
     mpf.plot(dfc, title=title, addplot=apds, type="candle",
-             style='yahoo', ylabel='Price', volume=False)
+             style=s, ylabel='Price', volume=False)

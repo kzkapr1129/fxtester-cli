@@ -24,8 +24,11 @@ def main():
                         help="出力ファイルのパス")
     parser.add_argument("--show-graph", action='store_true')
     parser.add_argument("--sma", type=int, nargs='*')
+    parser.add_argument("--ichimoku", action="store_true")
+    parser.add_argument("--zigzag", action="store_true")
 
     args = parser.parse_args()
+    print(args)
 
     # 設定読み込み
     config = load_config(Path("config/config.toml"))
@@ -38,7 +41,11 @@ def main():
             analyzer = importlib.import_module(
                 "analyze.analyze").Analyzer(config)
             analyzer.main(input_path=Path(args.input),
-                          output_path=args.output, show_graph=args.show_graph, sma=args.sma)
+                          output_path=args.output,
+                          show_graph=args.show_graph,
+                          sma=args.sma,
+                          enable_ichimoku=args.ichimoku,
+                          enable_zigzag=args.zigzag)
         case _:
             print(f"予期しないモードが指定されました: {args.mode}")
             sys.exit()

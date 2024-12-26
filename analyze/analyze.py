@@ -4,6 +4,7 @@
 from pathlib import Path
 from common.zigzag import mark_zigzag2
 from common.sma import mark_sma
+from common.ichimoku import mark_ichimoku
 import common.graph as g
 import pandas as pd
 import json
@@ -26,7 +27,7 @@ class Analyzer:
         """
         self.config = config
 
-    def main(self, input_path: Path, output_path: str, show_graph: bool, sma: list[int], csv_encoding: str = "utf-16le"):
+    def main(self, input_path: Path, output_path: str, show_graph: bool, sma: list[int], enable_ichimoku: bool = False, enable_zigzag: bool = False, csv_encoding: str = "utf-16le"):
         """メイン処理
 
         解析処理のメインとなる処理を実行する
@@ -46,9 +47,13 @@ class Analyzer:
             df = pd.read_csv(file, parse_dates=["datetime"], dayfirst=False, encoding=csv_encoding, names=[
                              "datetime", "open", "high", "low", "close", "tick", "volume"])
             # ジグザグを計算する
-            mark_zigzag2(df)
+            if enable_zigzag:
+                mark_zigzag2(df)
             # 単純移動平均線を計算する
             mark_sma(df, sma)
+            # 一目均衡表を計算する
+            if enable_ichimoku:
+                mark_ichimoku(df)
 
             if show_graph:
                 g.show(df, title=file.name, sma=sma)
