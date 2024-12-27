@@ -3,7 +3,7 @@
 import mplfinance as mpf
 from pandas import DataFrame
 import pandas as pd
-import japanize_matplotlib
+import japanize_matplotlib  # noqa: F401
 import matplotlib.pyplot as plt
 
 sma_colors = [
@@ -24,17 +24,17 @@ def show(df: DataFrame, sma: list[int] = [], title: str = ""):
     apds = []
 
     # 単純移動平均線のマーカー追加
-    for i, s in enumerate(sma if sma != None else []):
+    for i, s in enumerate(sma if sma is not None else []):
         color = sma_colors[i % len(sma_colors)]
         apds.append(mpf.make_addplot(
             dfc[f'sma-{s}'], color=color, label=f'SMA {s}'))
 
     if "ichimoku_senkou_span_1" in df.columns:
         apds.append(mpf.make_addplot(
-            dfc['ichimoku_senkou_span_1'], color='sandybrown', label=f'先行スパン1'))
+            dfc['ichimoku_senkou_span_1'], color='sandybrown', label='先行スパン1'))
     if "ichimoku_senkou_span_2" in df.columns:
         apds.append(mpf.make_addplot(
-            dfc['ichimoku_senkou_span_2'], color='thistle', label=f'先行スパン2'))
+            dfc['ichimoku_senkou_span_2'], color='thistle', label='先行スパン2'))
 
     zigzag_inputs = [
         {"name": 'zigzag-peak-price', "marker": "v", "color": 'red'},

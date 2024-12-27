@@ -50,17 +50,17 @@ def main():
 
     match args.mode:
         case 'extract':
-            if args.input == None:
+            if args.input is None:
                 logger.error("-i or --input is mandatory")
                 return
             extractor = importlib.import_module(
                 "cmds.extract.extract").Extractor(config)
             extractor.main(input_path=Path(args.input),
-                          output_path=args.output,
-                          show_graph=args.show_graph,
-                          sma=args.sma,
-                          enable_ichimoku=args.ichimoku,
-                          enable_zigzag=args.zigzag)
+                           output_path=args.output,
+                           show_graph=args.show_graph,
+                           sma=args.sma,
+                           enable_ichimoku=args.ichimoku,
+                           enable_zigzag=args.zigzag)
         case _:
             print(f"予期しないモードが指定されました: {args.mode}")
             sys.exit()
