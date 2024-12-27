@@ -54,7 +54,7 @@ def main():
                 logger.error("-i or --input is mandatory")
                 return
             extractor = importlib.import_module(
-                "extract.extract").Extractor(config)
+                "cmds.extract.extract").Extractor(config)
             extractor.main(input_path=Path(args.input),
                           output_path=args.output,
                           show_graph=args.show_graph,
