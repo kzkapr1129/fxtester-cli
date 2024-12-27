@@ -26,20 +26,20 @@ def main():
     sub_parser = parser.add_subparsers(
         dest="mode", required=True, help="サブコマンド")
 
-    # extractパーサーの初期化
-    extract_parser = sub_parser.add_parser(
-        "extract", help="ローソク足の特徴を抽出する", parents=[common_parser])
-    extract_parser.add_argument("-i", "--input", type=str,
-                                help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
-    extract_parser.add_argument("-o", "--output", type=str,
-                                help="出力ファイルのパス")
-    extract_parser.add_argument(
+    # indicatorパーサーの初期化
+    indicator_parser = sub_parser.add_parser(
+        "indicator", help="ローソク足の特徴を抽出する", parents=[common_parser])
+    indicator_parser.add_argument("-i", "--input", type=str,
+                                  help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
+    indicator_parser.add_argument("-o", "--output", type=str,
+                                  help="出力ファイルのパス")
+    indicator_parser.add_argument(
         "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
-    extract_parser.add_argument(
+    indicator_parser.add_argument(
         "--sma", type=int, nargs='*', help="単純移動平均線の平均値を指定する")
-    extract_parser.add_argument(
+    indicator_parser.add_argument(
         "--ichimoku", action="store_true", help="一目均衡表を計算する")
-    extract_parser.add_argument(
+    indicator_parser.add_argument(
         "--zigzag", action="store_true", help="ジグザグを検出する")
 
     # コマンドのパース
@@ -49,13 +49,13 @@ def main():
     config = load_config(Path("config/config.toml"))
 
     match args.mode:
-        case 'extract':
+        case 'indicator':
             if args.input is None:
                 logger.error("-i or --input is mandatory")
                 return
-            extractor = importlib.import_module(
-                "cmds.extract.extract").Extractor(config)
-            extractor.main(input_path=Path(args.input),
+            indicator = importlib.import_module(
+                "cmds.indicator.indicator").Indicator(config)
+            indicator.main(input_path=Path(args.input),
                            output_path=args.output,
                            show_graph=args.show_graph,
                            sma=args.sma,

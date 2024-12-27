@@ -10,10 +10,10 @@ import pandas as pd
 import json
 
 
-class Extractor:
-    """抽出クラス
+class Indicator:
+    """インジケータクラス
 
-    ローソク足配列を解析し検査に有用なデータを抽出または作成を行い結果を出力する
+    入力されたローソク足からインジケータを出力する
 
     Attributes:
         config (dict[str,Any]): 設定情報が格納された辞書データ
