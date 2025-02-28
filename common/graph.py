@@ -25,7 +25,7 @@ def show(df: DataFrame, title: str = ""):
     # カラム名からSMAの数値を取得する
     sma = []
     for column in dfc.columns:
-        res = re.findall('^sma-(\d+)$', column)
+        res = re.findall(r'^sma-(\d+)$', column)
         if 0 < len(res):
             sma.append(*res)
 
