@@ -19,3 +19,5 @@ tasks:
      - pyenv install --skip-existing $(cat ./.python-version)
      - pyenv local $(cat ./.python-version)
      - pyenv rehash
+     - pip install -r ./.requirements.txt
+     - pip install -r ./.requirements-dev.txt

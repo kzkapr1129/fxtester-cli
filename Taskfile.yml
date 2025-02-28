@@ -12,3 +12,14 @@ tasks:
   init:py:
     cmds:
       - task: env:init:py
+
+  lint:
+    cmds:
+      - flake8 --ignore E501
+  lint:fix:
+    cmds:
+      - autopep8 . --in-place --recursive
+
+  test:
+    cmds:
+      - pytest .

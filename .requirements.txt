@@ -1,0 +1,5 @@
+tomlkit
+pandas
+mplfinance
+japanize-matplotlib
+setuptools
