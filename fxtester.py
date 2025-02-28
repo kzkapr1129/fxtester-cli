@@ -26,41 +26,38 @@ def main():
     sub_parser = parser.add_subparsers(
         dest="mode", required=True, help="サブコマンド")
 
-    # indicatorパーサーの初期化
-    indicator_parser = sub_parser.add_parser(
-        "indicator", help="ローソク足の特徴を抽出する", parents=[common_parser])
-    indicator_parser.add_argument("-i", "--input", type=str,
-                                  help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
-    indicator_parser.add_argument("-o", "--output", type=str,
-                                  help="出力ファイルのパス")
-    indicator_parser.add_argument(
+    # analyzerパーサーの初期化
+    analyzer_parser = sub_parser.add_parser(
+        "analyze", help="インジケータを計算する", parents=[common_parser])
+    analyzer_parser.add_argument("-i", "--input", type=str, required=True,
+                                 help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
+    analyzer_parser.add_argument("-o", "--output", type=str,
+                                 help="出力ファイルのパス")
+    analyzer_parser.add_argument(
         "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
-    indicator_parser.add_argument(
+    analyzer_parser.add_argument(
         "--sma", type=int, nargs='*', help="単純移動平均線の平均値を指定する")
-    indicator_parser.add_argument(
+    analyzer_parser.add_argument(
         "--ichimoku", action="store_true", help="一目均衡表を計算する")
-    indicator_parser.add_argument(
+    analyzer_parser.add_argument(
         "--zigzag", action="store_true", help="ジグザグを検出する")
 
     # コマンドのパース
     args = parser.parse_args()
 
     # 設定読み込み
-    config = load_config(Path("config/config.toml"))
+    config = load_config(Path(args.config))
 
     match args.mode:
-        case 'indicator':
-            if args.input is None:
-                logger.error("-i or --input is mandatory")
-                return
-            indicator = importlib.import_module(
-                "cmds.indicator.indicator").Indicator(config)
-            indicator.main(input_path=Path(args.input),
-                           output_path=args.output,
-                           show_graph=args.show_graph,
-                           sma=args.sma,
-                           enable_ichimoku=args.ichimoku,
-                           enable_zigzag=args.zigzag)
+        case 'analyze':
+            analyzer = importlib.import_module(
+                "cmds.analyze.analyzer").Analyzer(config)
+            analyzer.main(input_path=Path(args.input),
+                          output_path=args.output,
+                          show_graph=args.show_graph,
+                          sma=args.sma,
+                          enable_ichimoku=args.ichimoku,
+                          enable_zigzag=args.zigzag)
         case _:
             print(f"予期しないモードが指定されました: {args.mode}")
             sys.exit()

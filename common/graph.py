@@ -5,6 +5,7 @@ from pandas import DataFrame
 import pandas as pd
 import japanize_matplotlib  # noqa: F401
 import matplotlib.pyplot as plt
+import re
 
 sma_colors = [
     'blue',
@@ -16,10 +17,17 @@ sma_colors = [
 ]
 
 
-def show(df: DataFrame, sma: list[int] = [], title: str = ""):
+def show(df: DataFrame, title: str = ""):
     dfc = df.copy()
     dfc["datetime"] = pd.to_datetime(dfc["datetime"])
     dfc = dfc.set_index("datetime")
+
+    # カラム名からSMAの数値を取得する
+    sma = []
+    for column in dfc.columns:
+        res = re.findall('^sma-(\d+)$', column)
+        if 0 < len(res):
+            sma.append(*res)
 
     apds = []
 

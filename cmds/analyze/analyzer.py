@@ -7,13 +7,12 @@ from common.sma import mark_sma
 from common.ichimoku import mark_ichimoku
 import common.graph as g
 import pandas as pd
-import json
 
 
-class Indicator:
-    """インジケータクラス
+class Analyzer:
+    """解析クラス
 
-    入力されたローソク足からインジケータを出力する
+    入力されたローソク足から抵抗帯を検出する
 
     Attributes:
         config (dict[str,Any]): 設定情報が格納された辞書データ
@@ -41,7 +40,6 @@ class Indicator:
             file_list = [file for file in input_path.glob(
                 "*.csv") if file.is_file()]
 
-        json_array = []
         # 入力ファイル(.csv)の読み込み
         for file in file_list:
             df = pd.read_csv(file, parse_dates=["datetime"], dayfirst=False, encoding=csv_encoding, names=[
@@ -56,12 +54,13 @@ class Indicator:
                 mark_ichimoku(df)
 
             if show_graph:
-                g.show(df, title=file.name, sma=sma)
+                g.show(df, title=file.name)
 
-            json_array.append(json.loads(df.to_json(
-                orient="records", date_format="iso", date_unit="s")))
-
-        if output_path is not None and output_path != "":
-            with open(output_path, mode='w') as f:
-                # 抽出結果の出力
-                f.write(json.dumps(json_array, indent=4, ensure_ascii=False))
+            if output_path:
+                json = df.to_json(orient="records",
+                                  date_format="iso", date_unit="s", indent=4)
+                output_full_path = output_path / Path(file.name + ".json")
+                output_full_path.parent.mkdir(parents=True, exist_ok=True)
+                with open(output_full_path, mode='w') as f:
+                    # 抽出結果の出力
+                    f.write(json)
