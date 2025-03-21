@@ -6,6 +6,9 @@ import common.graph as g
 import pandas as pd
 import re
 import math
+import logging
+
+logger = logging.getLogger("detector")
 
 class Detector:
     """検出クラス
@@ -20,6 +23,13 @@ class Detector:
         self.config = config
 
     def main(self, input_path: Path, output_path: str, show_graph: bool, window_size: int, threshold: float=0.8):
+        if window_size < 0:
+            logger.error(f"invalid window size: {window_size}")
+            return
+        if threshold <= 0.0 or 1.0 < threshold:
+            logger.error(f"invalid threshold: {threshold}")
+            return
+
         # ファイル直接指定かフォルダ指定かチェックする
         if input_path.is_file():
             # ファイルが直接指定された場合
