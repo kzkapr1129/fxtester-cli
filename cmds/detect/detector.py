@@ -6,6 +6,7 @@ import common.graph as g
 import pandas as pd
 import re
 import logging
+from itertools import chain
 
 logger = logging.getLogger("detector")
 
@@ -22,7 +23,7 @@ class Detector:
     def __init__(self, config):
         self.config = config
 
-    def main(self, input_path: Path, output_path: str, show_graph: bool, window_size: int, threshold: float = 0.8):
+    def main(self, input_path: Path, output_path: str, output_ext: str, show_graph: bool, window_size: int, threshold: float = 0.8):
         if window_size < 0:
             logger.error(f"invalid window size: {window_size}")
             return
@@ -36,15 +37,22 @@ class Detector:
             file_list = [input_path]
         else:
             # フォルダが指定された場合
-            file_list = [file for file in input_path.glob(
+            file_list_json = [file for file in input_path.glob(
                 "*.json") if file.is_file()]
+            file_list_csv = [file for file in input_path.glob(
+                "*.csv") if file.is_file()]
+            file_list = chain(file_list_json, file_list_csv)
 
         # 抵抗帯名の一覧
         candidate_resistance_band_names = self.config["detect"]["candidate_resistance_band_names"]
 
         # 入力ファイル(.csv.json)の読み込み
         for file in file_list:
-            df = pd.read_json(file)
+            df = pd.DataFrame()
+            if file.suffix == ".json":
+                df = pd.read_json(file)
+            elif file.suffix == ".csv":
+                df = pd.read_csv(file)
 
             # 抵抗帯名を収集する
             target_resistance_band_names = []
@@ -122,14 +130,17 @@ class Detector:
                                f'resistance-point-{target_resistance_band_name}'] = df.loc[zigzag_idx, target_resistance_band_name]
 
             if show_graph:
-                g.show(df)
+                g.show(df, title=file.name)
 
             if output_path:
-                json = df.to_json(orient="records",
-                                  date_format="iso", date_unit="s", indent=4)
-                output_full_path = Path(output_path) / \
-                    Path(file.stem + ".json")
+                data = []
+                if output_ext == "json":
+                    data = df.to_json(orient="records",
+                                      date_format="iso", date_unit="s", indent=4)
+                elif output_ext == "csv":
+                    data = df.to_csv(index=True, index_label="index")
+                output_full_path = Path(output_path) / Path(file.stem + f".{output_ext}")
                 output_full_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(output_full_path, mode='w') as f:
                     # 抽出結果の出力
-                    f.write(json)
+                    f.write(data)

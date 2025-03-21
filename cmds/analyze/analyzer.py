@@ -26,7 +26,7 @@ class Analyzer:
         """
         self.config = config
 
-    def main(self, input_path: Path, output_path: str, show_graph: bool, sma: list[int], enable_ichimoku: bool = False, enable_zigzag: bool = False, csv_encoding: str = "utf-16le"):
+    def main(self, input_path: Path, output_path: str, output_ext: str, show_graph: bool, sma: list[int], enable_ichimoku: bool = False, enable_zigzag: bool = False, csv_encoding: str = "utf-16le"):
         """メイン処理
 
         抽出処理のメインとなる処理を実行する
@@ -57,10 +57,15 @@ class Analyzer:
                 g.show(df, title=file.name)
 
             if output_path:
-                json = df.to_json(orient="records",
-                                  date_format="iso", date_unit="s", indent=4)
-                output_full_path = output_path / Path(file.stem + ".json")
+                data = []
+                if output_ext == "json":
+                    data = df.to_json(orient="records",
+                                      date_format="iso", date_unit="s", indent=4)
+                elif output_ext == "csv":
+                    data = df.to_csv(index=True, index_label="index")
+                output_full_path = output_path / \
+                    Path(file.stem + f".{output_ext}")
                 output_full_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(output_full_path, mode='w') as f:
                     # 抽出結果の出力
-                    f.write(json)
+                    f.write(data)

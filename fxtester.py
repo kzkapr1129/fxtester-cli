@@ -34,13 +34,15 @@ def main():
     analyzer_parser.add_argument("-o", "--output", type=str,
                                  help="出力ファイルのパス")
     analyzer_parser.add_argument(
-        "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
+        "-e", "--ext", choices=["json", "csv"], help="出力ファイルの拡張子", default="json")
     analyzer_parser.add_argument(
-        "--sma", type=int, nargs='*', help="単純移動平均線の平均値を指定する")
+        "-g", "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
     analyzer_parser.add_argument(
-        "--ichimoku", action="store_true", help="一目均衡表を計算する")
+        "-s", "--sma", type=int, nargs='*', help="単純移動平均線の平均値を指定する")
     analyzer_parser.add_argument(
-        "--zigzag", action="store_true", help="ジグザグを検出する")
+        "-k", "--ichimoku", action="store_true", help="一目均衡表を計算する")
+    analyzer_parser.add_argument(
+        "-z", "--zigzag", action="store_true", help="ジグザグを検出する")
 
     # detectorパーサーの初期化
     detector_parser = sub_parser.add_parser(
@@ -50,7 +52,9 @@ def main():
     detector_parser.add_argument("-o", "--output", type=str,
                                  help="出力ファイルのパス")
     detector_parser.add_argument(
-        "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
+        "-e", "--ext", choices=["json", "csv"], help="出力ファイルの拡張子", default="json")
+    detector_parser.add_argument(
+        "-g", "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
     detector_parser.add_argument(
         "-w", "--window", type=int, help="抵抗帯判定に使用するウインドウの幅", default=1)
     detector_parser.add_argument(
@@ -67,6 +71,7 @@ def main():
                 "cmds.analyze.analyzer").Analyzer(config)
             analyzer.main(input_path=Path(args.input),
                           output_path=args.output,
+                          output_ext=args.ext,
                           show_graph=args.show_graph,
                           sma=args.sma,
                           enable_ichimoku=args.ichimoku,
@@ -76,6 +81,7 @@ def main():
                 "cmds.detect.detector").Detector(config)
             detector.main(input_path=Path(args.input),
                           output_path=args.output,
+                          output_ext=args.ext,
                           show_graph=args.show_graph,
                           window_size=args.window,
                           threshold=args.threshold)
