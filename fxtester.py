@@ -42,6 +42,19 @@ def main():
     analyzer_parser.add_argument(
         "--zigzag", action="store_true", help="ジグザグを検出する")
 
+    # detectorパーサーの初期化
+    detector_parser = sub_parser.add_parser(
+        "detect", help="抵抗帯の情報を検出する", parents=[common_parser])
+    detector_parser.add_argument("-i", "--input", type=str, required=True,
+                                 help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
+    detector_parser.add_argument("-o", "--output", type=str,
+                                 help="出力ファイルのパス")
+    detector_parser.add_argument(
+        "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
+    detector_parser.add_argument(
+        "-w", "--window", type=int, help="抵抗帯判定に使用するウインドウの幅", default=1)
+    detector_parser.add_argument(
+        "-t", "--threshold", type=float, help="抵抗帯面積率の閾値", default=0.8)
     # コマンドのパース
     args = parser.parse_args()
 
@@ -58,6 +71,14 @@ def main():
                           sma=args.sma,
                           enable_ichimoku=args.ichimoku,
                           enable_zigzag=args.zigzag)
+        case 'detect':
+            detector = importlib.import_module(
+                "cmds.detect.detector").Detector(config)
+            detector.main(input_path=Path(args.input),
+                          output_path=args.output,
+                          show_graph=args.show_graph,
+                          window_size=args.window,
+                          threshold=args.threshold)
         case _:
             print(f"予期しないモードが指定されました: {args.mode}")
             sys.exit()

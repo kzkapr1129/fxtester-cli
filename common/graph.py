@@ -29,6 +29,13 @@ def show(df: DataFrame, title: str = ""):
         if 0 < len(res):
             sma.append(*res)
 
+
+    # カラム名から抵抗帯を取得する
+    resistance_points = []
+    for column in dfc.columns:
+        if re.match(r'^resistance-point-.+$', column):
+            resistance_points.append(column)
+
     apds = []
 
     # 単純移動平均線のマーカー追加
@@ -46,7 +53,8 @@ def show(df: DataFrame, title: str = ""):
 
     zigzag_inputs = [
         {"name": 'zigzag-peak-price', "marker": "v", "color": 'red'},
-        {"name": 'zigzag-bottom-price', "marker": "^", "color": 'blue'}
+        {"name": 'zigzag-bottom-price', "marker": "^", "color": 'blue'},
+        *[{"name": name, "marker": "o", "color": "gold"} for name in resistance_points]
     ]
 
     # ジグザグのマーカーを追加
