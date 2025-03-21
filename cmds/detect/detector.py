@@ -5,10 +5,10 @@ from pathlib import Path
 import common.graph as g
 import pandas as pd
 import re
-import math
 import logging
 
 logger = logging.getLogger("detector")
+
 
 class Detector:
     """検出クラス
@@ -22,7 +22,7 @@ class Detector:
     def __init__(self, config):
         self.config = config
 
-    def main(self, input_path: Path, output_path: str, show_graph: bool, window_size: int, threshold: float=0.8):
+    def main(self, input_path: Path, output_path: str, show_graph: bool, window_size: int, threshold: float = 0.8):
         if window_size < 0:
             logger.error(f"invalid window size: {window_size}")
             return
@@ -44,7 +44,7 @@ class Detector:
 
         # 入力ファイル(.csv.json)の読み込み
         for file in file_list:
-            df=pd.read_json(file)
+            df = pd.read_json(file)
 
             # 抵抗帯名を収集する
             target_resistance_band_names = []
@@ -54,7 +54,7 @@ class Detector:
                         target_resistance_band_names.append(column)
 
             # ジグザグのマーク化された箇所を収集する
-            zigzag_indices = df.index[df['zigzag'] == True].tolist()
+            zigzag_indices = df.index[df['zigzag']].tolist()
 
             # ジグザグマークの箇所をループ
             for zigzag_idx in zigzag_indices:
@@ -67,8 +67,8 @@ class Detector:
                     over_area = 0   # 抵抗帯より上の実体面積
                     under_area = 0  # 抵抗帯より下の実体面積
                     over_count = 0  # 抵抗帯より実体が上にある数
-                    under_count = 0 # 抵抗帯より実体が下にある数
-                    count_overlap = 0 # 高値から安値の間で抵抗帯が存在しているローソク足の数
+                    under_count = 0  # 抵抗帯より実体が下にある数
+                    count_overlap = 0  # 高値から安値の間で抵抗帯が存在しているローソク足の数
 
                     inspect_start = max(0, zigzag_idx - window_size)
                     inspect_end = min(len(df), zigzag_idx + window_size + 1)
@@ -118,17 +118,18 @@ class Detector:
 
                     if found:
                         # dataframeに抵抗帯をマーク
-                        df.loc[zigzag_idx, f'resistance-point-{target_resistance_band_name}'] = df.loc[zigzag_idx, target_resistance_band_name]
+                        df.loc[zigzag_idx,
+                               f'resistance-point-{target_resistance_band_name}'] = df.loc[zigzag_idx, target_resistance_band_name]
 
             if show_graph:
                 g.show(df)
 
             if output_path:
-                json = df.to_json(orient="records", date_format="iso", date_unit="s", indent=4)
-                output_full_path = Path(output_path) / Path(file.stem + ".json")
+                json = df.to_json(orient="records",
+                                  date_format="iso", date_unit="s", indent=4)
+                output_full_path = Path(output_path) / \
+                    Path(file.stem + ".json")
                 output_full_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(output_full_path, mode='w') as f:
                     # 抽出結果の出力
                     f.write(json)
-
-

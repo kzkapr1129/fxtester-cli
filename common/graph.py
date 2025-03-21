@@ -29,7 +29,6 @@ def show(df: DataFrame, title: str = ""):
         if 0 < len(res):
             sma.append(*res)
 
-
     # カラム名から抵抗帯を取得する
     resistance_points = []
     for column in dfc.columns:
