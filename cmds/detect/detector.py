@@ -64,6 +64,9 @@ class Detector:
             # ジグザグのマーク化された箇所を収集する
             zigzag_indices = df.index[df['zigzag']].tolist()
 
+            # 抵抗帯ポイント列の初期化
+            df['resistance-point'] = False
+
             # ジグザグマークの箇所をループ
             for zigzag_idx in zigzag_indices:
 
@@ -126,8 +129,8 @@ class Detector:
 
                     if found:
                         # dataframeに抵抗帯をマーク
-                        df.loc[zigzag_idx,
-                               f'resistance-point-{target_resistance_band_name}'] = df.loc[zigzag_idx, target_resistance_band_name]
+                        df.loc[zigzag_idx, 'resistance-point'] = True
+                        df.loc[zigzag_idx, f'resistance-point-{target_resistance_band_name}'] = df.loc[zigzag_idx, target_resistance_band_name]
 
             if show_graph:
                 g.show(df, title=file.name)
