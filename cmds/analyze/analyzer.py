@@ -59,7 +59,7 @@ class Analyzer:
             if output_path:
                 json = df.to_json(orient="records",
                                   date_format="iso", date_unit="s", indent=4)
-                output_full_path = output_path / Path(file.name + ".json")
+                output_full_path = output_path / Path(file.stem + ".json")
                 output_full_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(output_full_path, mode='w') as f:
                     # 抽出結果の出力

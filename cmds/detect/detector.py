@@ -27,7 +27,7 @@ class Detector:
         else:
             # フォルダが指定された場合
             file_list = [file for file in input_path.glob(
-                "*.csv.json") if file.is_file()]
+                "*.json") if file.is_file()]
 
         # 抵抗帯名の一覧
         candidate_resistance_band_names = self.config["detect"]["candidate_resistance_band_names"]
@@ -115,7 +115,7 @@ class Detector:
 
             if output_path:
                 json = df.to_json(orient="records", date_format="iso", date_unit="s", indent=4)
-                output_full_path = Path(output_path) / Path(file.name + "_detect.json")
+                output_full_path = Path(output_path) / Path(file.stem + ".json")
                 output_full_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(output_full_path, mode='w') as f:
                     # 抽出結果の出力
