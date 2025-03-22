@@ -67,6 +67,7 @@ class Detector:
             # 抵抗帯ポイント列の初期化
             df['resistance-point'] = False
 
+            # 抵抗帯として認識されたインジケータを検出する
             # ジグザグマークの箇所をループ
             for zigzag_idx in zigzag_indices:
 
@@ -131,6 +132,27 @@ class Detector:
                         # dataframeに抵抗帯をマーク
                         df.loc[zigzag_idx, 'resistance-point'] = True
                         df.loc[zigzag_idx, f'resistance-point-{target_resistance_band_name}'] = df.loc[zigzag_idx, target_resistance_band_name]
+
+            lastPeak = None
+            lastBottom = None
+            # 高値・安値更新が行われたジグザグの起点を検出する
+            for zigzag_idx in zigzag_indices:
+                row = df.iloc[zigzag_idx]
+                kind = row['zigzag-kind']
+                if kind == "peak":
+                    bodyMax = max(row['open'], row['close'])
+                    if lastPeak is not None:
+                        lastPeakBodyMax = max(df.loc[lastPeak, 'open'], df.loc[lastPeak, 'close'])
+                        if lastPeakBodyMax < bodyMax and lastBottom is not None:
+                            df.loc[lastBottom, "zigzag-update"] = min(df.loc[lastBottom, "open"], df.loc[lastBottom, "close"])
+                    lastPeak = zigzag_idx
+                elif kind == "bottom":
+                    bodyMin = min(row['open'], row['close'])
+                    if lastBottom is not None:
+                        lastBottomBodyMin = min(df.loc[lastBottom, 'open'], df.loc[lastBottom, 'close'])
+                        if bodyMin < lastBottomBodyMin and lastPeak is not None:
+                            df.loc[lastPeak, "zigzag-update"] = max(df.loc[lastPeak, "open"], df.loc[lastPeak, "close"])
+                    lastBottom = zigzag_idx
 
             if show_graph:
                 g.show(df, title=file.name)
