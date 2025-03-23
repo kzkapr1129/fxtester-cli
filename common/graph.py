@@ -43,10 +43,10 @@ def show(df: DataFrame, title: str = ""):
         apds.append(mpf.make_addplot(
             dfc[f'sma-{s}'], color=color, label=f'SMA {s}'))
 
-    if "ichimoku_senkou_span_1" in df.columns:
+    if "ichimoku_senkou_span_1" in dfc.columns:
         apds.append(mpf.make_addplot(
             dfc['ichimoku_senkou_span_1'], color='sandybrown', label='先行スパン1'))
-    if "ichimoku_senkou_span_2" in df.columns:
+    if "ichimoku_senkou_span_2" in dfc.columns:
         apds.append(mpf.make_addplot(
             dfc['ichimoku_senkou_span_2'], color='thistle', label='先行スパン2'))
 
@@ -59,8 +59,13 @@ def show(df: DataFrame, title: str = ""):
 
     # ジグザグのマーカーを追加
     for zi in zigzag_inputs:
-        if zi["name"] in df.columns:
-            zigzag_prices = df[zi["name"]]
+        if zi["name"] in dfc.columns:
+            zigzag_prices = dfc[zi["name"]]
+            if zigzag_prices.nunique() <= 1 or zigzag_prices.isna().all():
+                # MEMO:
+                # 空配列、または全てNaN,null,Noneのデータの場合。
+                # このケースは配列を引数とするmax関数でエラーになるため、この段階で弾いておく。
+                continue
             apds.append(mpf.make_addplot(zigzag_prices, type='scatter',
                         markersize=10, marker=zi["marker"], color=zi["color"]))
 
