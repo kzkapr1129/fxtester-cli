@@ -53,8 +53,8 @@ def show(df: DataFrame, title: str = ""):
     zigzag_inputs = [
         {"name": 'zigzag-peak-price', "marker": "v", "color": 'red'},
         {"name": 'zigzag-bottom-price', "marker": "^", "color": 'blue'},
-        {"name": 'origin-up', "marker": "v", "color": 'green'},
-        {"name": 'origin-down', "marker": "^", "color": 'yellow'},
+        {"name": 'origin-down', "marker": "v", "color": 'green'},
+        {"name": 'origin-up', "marker": "^", "color": 'yellow'},
         *[{"name": name, "marker": "o", "color": "gold"} for name in resistance_points]
     ]
 
