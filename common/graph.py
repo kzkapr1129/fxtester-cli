@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 import re
 
 sma_colors = [
-    'blue',
-    'red',
-    'green',
-    'purple',
-    'black',
-    'cyan'
+    'steelblue',
+    'mediumpurple',
+    'brown',
+    'bisque',
+    'yellowgreen',
+    'lime'
 ]
 
 
@@ -53,7 +53,8 @@ def show(df: DataFrame, title: str = ""):
     zigzag_inputs = [
         {"name": 'zigzag-peak-price', "marker": "v", "color": 'red'},
         {"name": 'zigzag-bottom-price', "marker": "^", "color": 'blue'},
-        {"name": 'zigzag-update', "marker": "o", "color": 'orange'},
+        {"name": 'origin-up', "marker": "v", "color": 'green'},
+        {"name": 'origin-down', "marker": "^", "color": 'yellow'},
         *[{"name": name, "marker": "o", "color": "gold"} for name in resistance_points]
     ]
 

@@ -144,14 +144,14 @@ class Detector:
                     if lastPeak is not None:
                         lastPeakBodyMax = max(df.loc[lastPeak, 'open'], df.loc[lastPeak, 'close'])
                         if lastPeakBodyMax < bodyMax and lastBottom is not None:
-                            df.loc[lastBottom, "zigzag-update"] = min(df.loc[lastBottom, "open"], df.loc[lastBottom, "close"])
+                            df.loc[lastBottom, "origin-down"] = min(df.loc[lastBottom, "open"], df.loc[lastBottom, "close"])
                     lastPeak = zigzag_idx
                 elif kind == "bottom":
                     bodyMin = min(row['open'], row['close'])
                     if lastBottom is not None:
                         lastBottomBodyMin = min(df.loc[lastBottom, 'open'], df.loc[lastBottom, 'close'])
                         if bodyMin < lastBottomBodyMin and lastPeak is not None:
-                            df.loc[lastPeak, "zigzag-update"] = max(df.loc[lastPeak, "open"], df.loc[lastPeak, "close"])
+                            df.loc[lastPeak, "origin-up"] = max(df.loc[lastPeak, "open"], df.loc[lastPeak, "close"])
                     lastBottom = zigzag_idx
 
             if show_graph:
