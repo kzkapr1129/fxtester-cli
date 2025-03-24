@@ -77,5 +77,12 @@ def show(df: DataFrame, title: str = ""):
         rc={"font.family": plt.rcParams["font.family"][0]},
     )
 
+    # 時刻の種類に応じてX軸の表示フォーマットを変更する
+    datetime_format = '%Y/%m/%d'
+    # MEMO: .dt.timeで時刻だけを抽出して00:00:00以外のデータが存在するかをクエリーする
+    if 0 < len(df.query("datetime.dt.time != @pd.to_datetime('00:00:00').time()")):
+        # 00時00分00秒以外のデータが存在している場合
+        datetime_format = '%Y/%m/%d %H:%M:%S'
+
     mpf.plot(dfc, title=title, addplot=apds, type="candle",
-             style=s, ylabel='Price', volume=False)
+             style=s, ylabel='Price', volume=False, datetime_format=datetime_format)
