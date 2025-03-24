@@ -62,7 +62,7 @@ class Detector:
                         target_resistance_band_names.append(column)
 
             # ジグザグのマーク化された箇所を収集する
-            zigzag_indices = df.index[df['zigzag']].tolist()
+            zigzag_indices = df.index[df['zigzag']].tolist() if 'zigzag' in df.columns else []
 
             # 抵抗帯ポイント列の初期化
             df['resistance-point'] = False
