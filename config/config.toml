@@ -1,4 +1,11 @@
 [analyze]
+input="/Users/nakayama/"
+output="/Users/nakayama/workspace/fxtester-cli/result/analyze"
+ext="json"
+show_graph=false
+sma=[20, 25, 50, 75, 100]
+ichimoku=true
+zigzag=true
 
 [detect]
 candidate_resistance_band_names = ["^ichimoku_senkou_span_[12]$","^sma-[1-9][0-9]+?$"]

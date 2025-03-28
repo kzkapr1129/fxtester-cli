@@ -26,9 +26,9 @@ def main():
 
     # analyzerパーサーの初期化
     analyzer_parser = sub_parser.add_parser("analyze", help="インジケータを計算する", parents=[common_parser])
-    analyzer_parser.add_argument("-i", "--input", type=str, required=True, help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
+    analyzer_parser.add_argument("-i", "--input", type=str, help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
     analyzer_parser.add_argument("-o", "--output", type=str, help="出力ファイルのパス")
-    analyzer_parser.add_argument("-e", "--ext", choices=["json", "csv"], help="出力ファイルの拡張子", default="json")
+    analyzer_parser.add_argument("-e", "--ext", choices=["json", "csv"], help="出力ファイルの拡張子")
     analyzer_parser.add_argument("-g", "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
     analyzer_parser.add_argument("-s", "--sma", type=int, nargs='*', help="単純移動平均線の平均値を指定する")
     analyzer_parser.add_argument("-k", "--ichimoku", action="store_true", help="一目均衡表を計算する")
@@ -51,15 +51,7 @@ def main():
 
     match args.mode:
         case 'analyze':
-            analyzer = importlib.import_module(
-                "cmds.analyze.analyzer").Analyzer(config)
-            analyzer.main(input_path=Path(args.input),
-                          output_path=args.output,
-                          output_ext=args.ext,
-                          show_graph=args.show_graph,
-                          sma=args.sma,
-                          enable_ichimoku=args.ichimoku,
-                          enable_zigzag=args.zigzag)
+            importlib.import_module("cmds.analyze.analyzer").Analyzer(config).main(args)
         case 'detect':
             detector = importlib.import_module(
                 "cmds.detect.detector").Detector(config)
