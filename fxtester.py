@@ -36,12 +36,12 @@ def main():
 
     # detectorパーサーの初期化
     detector_parser = sub_parser.add_parser("detect", help="抵抗帯の情報を検出する", parents=[common_parser])
-    detector_parser.add_argument("-i", "--input", type=str, required=True, help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
+    detector_parser.add_argument("-i", "--input", type=str, help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
     detector_parser.add_argument("-o", "--output", type=str, help="出力ファイルのパス")
     detector_parser.add_argument("-e", "--ext", choices=["json", "csv"], help="出力ファイルの拡張子", default="json")
     detector_parser.add_argument("-g", "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
-    detector_parser.add_argument("-w", "--window", type=int, help="抵抗帯判定に使用するウインドウの幅", default=1)
-    detector_parser.add_argument("-t", "--threshold", type=float, help="抵抗帯面積率の閾値", default=0.8)
+    detector_parser.add_argument("-w", "--window", type=int, help="抵抗帯判定に使用するウインドウの幅")
+    detector_parser.add_argument("-t", "--threshold", type=float, help="抵抗帯面積率の閾値")
 
     # コマンドのパース
     args = parser.parse_args()
@@ -53,14 +53,7 @@ def main():
         case 'analyze':
             importlib.import_module("cmds.analyze.analyzer").Analyzer(config).main(args)
         case 'detect':
-            detector = importlib.import_module(
-                "cmds.detect.detector").Detector(config)
-            detector.main(input_path=Path(args.input),
-                          output_path=args.output,
-                          output_ext=args.ext,
-                          show_graph=args.show_graph,
-                          window_size=args.window,
-                          threshold=args.threshold)
+            importlib.import_module("cmds.detect.detector").Detector(config).main(args)
         case _:
             print(f"予期しないモードが指定されました: {args.mode}")
             sys.exit()

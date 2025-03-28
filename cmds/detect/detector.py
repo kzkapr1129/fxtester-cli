@@ -23,7 +23,21 @@ class Detector:
     def __init__(self, config):
         self.config = config
 
-    def main(self, input_path: Path, output_path: str, output_ext: str, show_graph: bool, window_size: int, threshold: float = 0.8):
+    def main(self, args):
+
+        # 入力ファイルパスの取得
+        input_path = Path(args.input) if args.input != None else Path(self.config["detect"]["input"])
+        # 出力ファイルパスの取得
+        output_path = args.output if args.output != None else self.config["detect"]["output"]
+        # 出力ファイルの拡張子取得
+        output_ext = args.ext if args.ext != None else self.config["detect"]["ext"]
+        # グラフ表示の可否取得
+        show_graph = args.show_graph if args.show_graph else bool(self.config["detect"]["show_graph"])
+        # 抵抗帯判定用ウインドウサイズの取得
+        window_size = args.window if args.window != None else self.config["detect"]["window"]
+        # 抵抗帯判定用の閾値取得
+        threshold = args.threshold if args.threshold != None else self.config["detect"]["threshold"]
+
         if window_size < 0:
             logger.error(f"invalid window size: {window_size}")
             return
