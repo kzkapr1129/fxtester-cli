@@ -8,12 +8,18 @@ FXTester-cliは複数のコマンドで構成されており、各コマンド�
 |# | コマンド名 | 入力値 | 出力値 | 機能 |
 |-|-|-|-|-|
 |1|Analyze|MT4,5のCSV|MT4,5が出力したローソク足の情報が格納されたjsonファイル| ローソク足の前後関係から計算できる情報を分析する |
+|2|Detect|Analyzeで出力されたjson|抵抗帯からの反発の情報が格納されたjsonファイル| 複数のローソク足の前後関係から計算できる情報を検知する |
 
 ## 実行例
 
 Analyze機能
 ```
 $ python fxtester.py analyze -i input.csv -o output.json
+```
+
+Detect機能
+```
+$ python fxtester.py detect -i input.csv -o output.json
 ```
 
 ## 開発環境の構築
