@@ -33,15 +33,15 @@ class Analyzer:
         """
 
         # 入力ファイルパスの取得
-        input_path = Path(args.input) if args.input != None else Path(self.config["analyze"]["input"])
+        input_path = Path(args.input) if args.input is not None else Path(self.config["analyze"]["input"])
         # 出力ファイルパスの取得
-        output_path = args.output if args.output != None else self.config["analyze"]["output"]
+        output_path = args.output if args.output is not None else self.config["analyze"]["output"]
         # 出力ファイルの拡張子取得
-        output_ext = args.ext if args.ext != None else self.config["analyze"]["ext"]
+        output_ext = args.ext if args.ext is not None else self.config["analyze"]["ext"]
         # グラフ表示の可否取得
         show_graph = args.show_graph if args.show_graph else bool(self.config["analyze"]["show_graph"])
         # SMAの数値取得
-        sma = args.sma if args.sma != None else self.config["analyze"]["sma"]
+        sma = args.sma if args.sma is not None else self.config["analyze"]["sma"]
         # 一目均衡表の可否取得
         enable_ichimoku = args.ichimoku if args.ichimoku else bool(self.config["analyze"]["ichimoku"])
         # ジグザグの可否取得
