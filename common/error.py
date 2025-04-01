@@ -1,0 +1,2 @@
+class BadCmdException(Exception):
+    pass
