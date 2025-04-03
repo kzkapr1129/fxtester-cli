@@ -22,4 +22,10 @@ tasks:
 
   test:
     cmds:
-      - pytest .
+      - |
+        coverage run -m pytest
+        coverage report -m
+        coverage html -d coverage_report
+  test:clean:
+    cmds:
+      - rm -rf coverage_report .coverage

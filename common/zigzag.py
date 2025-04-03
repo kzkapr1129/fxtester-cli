@@ -4,21 +4,6 @@ from pandas import DataFrame
 from typing import Any
 
 
-def mark_zigzag(df: DataFrame) -> DataFrame:
-    """ジグザグ情報をデータフレームに書き込む
-
-    Args:
-        df (DataFrame): ローソク足の情報が格納されたデータフレーム
-
-    Returns:
-        DataFrame: ジグザグ情報が書き込まれたデータフレーム
-    """
-    df["zigzag"] = False
-    mark_zigzag_peak_to_bottom(df)
-    mark_zigzag_bottom_to_peak(df)
-    return df
-
-
 def mark_zigzag2(df: DataFrame) -> DataFrame:
     """ジグザグ情報をデータフレームに書き込む
        v1との差分
@@ -104,84 +89,6 @@ def mark_zigzag2(df: DataFrame) -> DataFrame:
         last_bottom = bottom
 
     return df
-
-
-def mark_zigzag_peak_to_bottom(df):
-    """高値から安値方向へのジグザグ情報をデータフレームに書き込む
-
-    Args:
-        df (DataFrame): ローソク足の情報が格納されたデータフレーム
-
-    Returns:
-        DataFrame: ジグザグ情報が書き込まれたデータフレーム
-    """
-    row_index = 0
-    while row_index < len(df):
-        # 高値更新が止まった場所を探す
-        peak = find_peak(df, row_index)
-        # 安値更新が止まった場所を探す
-        bottom = find_bottom(df, peak["start"])
-
-        if bottom["index"] <= peak["index"]:
-            # グラフが高値更新しかしていない場合、`peakIndex == bottomIndex`となる可能性がある。
-            # この場合は検出なしとして処理する
-            break
-
-        # 経過時間
-        x = bottom["index"] - peak["index"]
-        # Y軸のΔ
-        y = bottom["box_min"] - peak["box_max"]
-        # 速度を計算
-        velocity = y / x
-
-        i = peak["index"]
-        df.loc[i, "zigzag"] = True
-        df.loc[i, "zigzag-kind"] = "peak"
-        df.loc[i, "zigzag-to"] = bottom["index"]
-        df.loc[i, "zigzag-velocity"] = velocity
-        df.loc[i, "zigzag-delta"] = y
-        df.loc[i, "zigzag-peak-price"] = peak["box_max"]
-
-        row_index = bottom["index"] + 1
-
-
-def mark_zigzag_bottom_to_peak(df):
-    """安値から高値方向へのジグザグ情報をデータフレームに書き込む
-
-    Args:
-        df (DataFrame): ローソク足の情報が格納されたデータフレーム
-
-    Returns:
-        DataFrame: ジグザグ情報が書き込まれたデータフレーム
-    """
-    row_index = 0
-    while row_index < len(df):
-        # 安値更新が止まった場所を探す
-        bottom = find_bottom(df, row_index)
-        # 高値更新が止まった場所を探す
-        peak = find_peak(df, bottom["start"])
-
-        if peak["index"] <= bottom["index"]:
-            # グラフが安値更新しかしていない場合、`peakIndex == bottomIndex`となる可能性がある。
-            # この場合は検出なしとして処理する
-            break
-
-        # 経過時間
-        x = peak["index"] - bottom["index"]
-        # Y軸のΔ
-        y = peak["box_max"] - bottom["box_min"]
-        # 速度を計算
-        velocity = y / x
-
-        i = bottom["index"]
-        df.loc[i, "zigzag"] = True
-        df.loc[i, "zigzag-kind"] = "bottom"
-        df.loc[i, "zigzag-to"] = peak["index"]
-        df.loc[i, "zigzag-velocity"] = velocity
-        df.loc[i, "zigzag-delta"] = y
-        df.loc[i, "zigzag-bottom-price"] = bottom["box_min"]
-
-        row_index = peak["index"] + 1
 
 
 def find_peak(df: DataFrame, start: int) -> dict[str:Any]:

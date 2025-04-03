@@ -1,132 +1,122 @@
-from zigzag import mark_zigzag, mark_zigzag_bottom_to_peak, mark_zigzag_peak_to_bottom
+from zigzag import mark_zigzag2
+from pandas import DataFrame
 import pandas as pd
-import os
+import numpy as np
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-test_data_path = f"{current_dir}/test/USDJPYDaily.csv"
+
+def equals_nan_array(array1, array2) -> bool:
+    return pd.Series(array1).equals(pd.Series(array2))
 
 
 def test_mark_zigzag():
-    test_data_expect = [
-        0,
-        2,
-        5,
-        6,
-        9,
-        11,
-        14,
-        15,
-        17,
-        18,
-        22,
-        24,
-        25,
-        30,
-        33,
-        34,
-        42,
-        43,
-        50,
-        58,
-        62,
-        66,
-        67,
-        83,
-        89,
-        95,
-        97,
-        103,
-        105,
-        106,
-        111,
-        115,
-        116,
-        123,
-        125,
-        131,
-        133,
-        136,
-        138,
-        140,
-        142,
-        143,
-        155,
-        157,
-        159,
-        162,
-        171,
-        174,
-        179,
-        180,
-        185,
-        189,
-        190,
-        192,
-        194,
-        198,
-        200,
-        201,
-        203,
-        207,
-        208,
-        215,
-        220,
-        221,
-        224,
-        228,
-        229,
-        231,
-    ]
-    df = mark_zigzag(pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=["datetime", "open", "high", "low", "close", "tick", "volume"]))
-    assert test_data_expect == df[df["zigzag"]].index.tolist()
+    # ローソク足の包含関係なし && 全て陽線
+    df = DataFrame(
+        {
+            "open": [5, 4, 3, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+            "close": [4, 3, 2, 1, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 3, 5, 8, 12, 13]
+    assert res.index[res["zigzag-kind"] == "peak"].to_list() == [0, 5, 12]
+    assert res.index[res["zigzag-kind"] == "bottom"].to_list() == [3, 8, 13]
+    assert equals_nan_array(res["zigzag-from"].to_list(), [0.0, np.nan, np.nan, 0.0, np.nan, 3.0, np.nan, np.nan, 5.0, np.nan, np.nan, np.nan, 8.0, 12.0])
+    assert equals_nan_array(res["zigzag-velocity"].to_list(), [0.0, np.nan, np.nan, -1.3333333333333333, np.nan, 1.500000, np.nan, np.nan, -1.3333333333333333, np.nan, np.nan, np.nan, 1.250000, -2.000000])
+    assert equals_nan_array(res["zigzag-delta"].to_list(), [0.0, np.nan, np.nan, -4.0, np.nan, 3.0, np.nan, np.nan, -4.0, np.nan, np.nan, np.nan, 5.0, -2.0])
+    assert equals_nan_array(res["zigzag-peak-price"].to_list(), [5.0, np.nan, np.nan, np.nan, np.nan, 4.0, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 5.0, np.nan])
+    assert equals_nan_array(res["zigzag-bottom-price"].to_list(), [np.nan, np.nan, np.nan, 1.0, np.nan, np.nan, np.nan, np.nan, 0.0, np.nan, np.nan, np.nan, np.nan, 3.0])
 
+    # ローソク足の包含関係なし && 全て陰線
+    df = DataFrame(
+        {
+            "open": [4, 3, 2, 1, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+            "close": [5, 4, 3, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 3, 5, 8, 12, 13]
+    assert res.index[res["zigzag-kind"] == "peak"].to_list() == [0, 5, 12]
+    assert res.index[res["zigzag-kind"] == "bottom"].to_list() == [3, 8, 13]
+    assert equals_nan_array(res["zigzag-from"].to_list(), [0.0, np.nan, np.nan, 0.0, np.nan, 3.0, np.nan, np.nan, 5.0, np.nan, np.nan, np.nan, 8.0, 12.0])
+    assert equals_nan_array(res["zigzag-velocity"].to_list(), [0.0, np.nan, np.nan, -1.3333333333333333, np.nan, 1.500000, np.nan, np.nan, -1.3333333333333333, np.nan, np.nan, np.nan, 1.250000, -2.000000])
+    assert equals_nan_array(res["zigzag-delta"].to_list(), [0.0, np.nan, np.nan, -4.0, np.nan, 3.0, np.nan, np.nan, -4.0, np.nan, np.nan, np.nan, 5.0, -2.0])
+    assert equals_nan_array(res["zigzag-peak-price"].to_list(), [5.0, np.nan, np.nan, np.nan, np.nan, 4.0, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 5.0, np.nan])
+    assert equals_nan_array(res["zigzag-bottom-price"].to_list(), [np.nan, np.nan, np.nan, 1.0, np.nan, np.nan, np.nan, np.nan, 0.0, np.nan, np.nan, np.nan, np.nan, 3.0])
 
-def test_mark_zigzag_bottom_to_peak():
-    test_data_expect = [0, 5, 9, 14, 17, 22, 25, 33, 43, 50, 62, 67, 89, 97, 105, 111, 116, 125, 133, 138, 142, 155, 159, 171, 179, 185, 190, 194, 200, 203, 208, 220, 224, 229]
-    df = pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=["datetime", "open", "high", "low", "close", "tick", "volume"])
-    df["zigzag"] = False
-    mark_zigzag_bottom_to_peak(df)
-    assert test_data_expect == df[df["zigzag"]].index.tolist()
+    # 右のローソク足が左のローソク足に包含 (高値更新、安値更新なし) && 陽線
+    df = DataFrame(
+        {
+            "open": [5, 4, 3, 2, 1.5, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+            "close": [4, 3, 2, 1, 1.3, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 3, 6, 9, 13, 14]
+    assert res.index[res["zigzag-kind"] == "peak"].to_list() == [0, 6, 13]
+    assert res.index[res["zigzag-kind"] == "bottom"].to_list() == [3, 9, 14]
 
+    # 右のローソク足が左のローソク足に包含 (高値更新、安値更新なし) && 陰線
+    df = DataFrame(
+        {
+            "open": [5, 4, 3, 2, 1.3, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+            "close": [4, 3, 2, 1, 1.5, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 3, 6, 9, 13, 14]
+    assert res.index[res["zigzag-kind"] == "peak"].to_list() == [0, 6, 13]
+    assert res.index[res["zigzag-kind"] == "bottom"].to_list() == [3, 9, 14]
 
-def test_mark_zigzag_peak_to_bottom():
-    test_data_expect = [
-        2,
-        6,
-        11,
-        15,
-        18,
-        24,
-        30,
-        34,
-        42,
-        58,
-        66,
-        83,
-        95,
-        103,
-        106,
-        115,
-        123,
-        131,
-        136,
-        140,
-        143,
-        157,
-        162,
-        174,
-        180,
-        189,
-        192,
-        198,
-        201,
-        207,
-        215,
-        221,
-        228,
-        231,
-    ]
-    df = pd.read_csv(test_data_path, parse_dates=["datetime"], dayfirst=False, encoding="utf-16le", names=["datetime", "open", "high", "low", "close", "tick", "volume"])
-    df["zigzag"] = False
-    mark_zigzag_peak_to_bottom(df)
-    assert test_data_expect == df[df["zigzag"]].index.tolist()
+    # 左のローソク足が右のローソク足に包含 (高値更新・安値更新あり) && 陽線
+    df = DataFrame(
+        {
+            "open": [5, 4, 3, 2, 2.1, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+            "close": [4, 3, 2, 1, 0.9, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 4, 6, 9, 13, 14]
+    assert res.index[res["zigzag-kind"] == "peak"].to_list() == [0, 6, 13]
+    assert res.index[res["zigzag-kind"] == "bottom"].to_list() == [4, 9, 14]
+
+    # 左のローソク足が右のローソク足に包含 (高値更新・安値更新あり) && 陰線
+    df = DataFrame(
+        {
+            "open": [5, 4, 3, 2, 0.9, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+            "close": [4, 3, 2, 1, 2.1, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 4, 6, 9, 13, 14]
+    assert res.index[res["zigzag-kind"] == "peak"].to_list() == [0, 6, 13]
+    assert res.index[res["zigzag-kind"] == "bottom"].to_list() == [4, 9, 14]
+
+    # L194: ローソク足が陰線の場合
+    df = DataFrame(
+        {
+            "open": [5, 4, 3, 2, 1.9, 1.8, 2, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+            "close": [4, 3, 2, 1, 1.1, 1.2, 1, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 3, 8, 11, 15, 16]
+
+    # L197: ローソク足が陽線の場合
+    df = DataFrame(
+        {
+            "open": [5, 4, 3, 2, 1.9, 1.8, 1, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+            "close": [4, 3, 2, 1, 1.1, 1.2, 2, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 3, 8, 11, 15, 16]
+
+    # L186: 前回のローソク足の安値を更新した場合 (bottomの更新はなし、高値の更新はなし)
+    df = DataFrame(
+        {
+            "open": [5, 4, 3, 2, 1.9, 1.8, 1.8, 1, 3, 4, 3, 2, 1, 2, 3, 4, 5, 4],
+            "close": [4, 3, 2, 1, 1.1, 1.2, 1.1, 2, 2, 3, 2, 1, 0, 1, 2, 3, 4, 3],
+        }
+    )
+    res = mark_zigzag2(df)
+    assert res.index[res["zigzag"]].to_list() == [0, 3, 9, 12, 16, 17]
