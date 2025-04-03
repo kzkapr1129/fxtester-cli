@@ -4,7 +4,7 @@
 # flake8: noqa
 
 from pandas import DataFrame
-from cond import make_cond, CondEqual, CondNotEqual, CondFlag, CondAny, CondSet
+from cond import make_conds, make_cond, CondEqual, CondNotEqual, CondFlag, CondAny, CondSet, search_results_generator
 from error import BadCmdException
 import pytest
 
@@ -331,4 +331,53 @@ def test_make_cond():
     assert isinstance(cond, CondAny)
 
 def test_make_conds():
-    pass
+    conds = make_conds("aaa==123")
+    assert len(conds) == 1
+    assert isinstance(conds[0], CondEqual)
+
+    conds = make_conds("aaa == 123")
+    assert len(conds) == 1
+    assert isinstance(conds[0], CondEqual)
+
+    conds = make_conds("aaa")
+    assert len(conds) == 1
+    assert isinstance(conds[0], CondFlag)
+
+    conds = make_conds("aaa and a == b")
+    assert len(conds) == 1
+    assert isinstance(conds[0], CondSet)
+    assert len(conds[0].conds) == 2
+    assert isinstance(conds[0].conds[0], CondFlag)
+    assert isinstance(conds[0].conds[1], CondEqual)
+
+    conds = make_conds("aaa==123 > aaa")
+    assert len(conds) == 2
+    assert isinstance(conds[0], CondEqual)
+    assert isinstance(conds[1], CondFlag)
+
+    conds = make_conds("aaa > aaa==123")
+    assert len(conds) == 2
+    assert isinstance(conds[0], CondFlag)
+    assert isinstance(conds[1], CondEqual)
+
+    conds = make_conds("aaa==123 and bbb or ccc!=123 > aaa==123")
+    assert len(conds) == 2
+    assert isinstance(conds[0], CondSet)
+    assert isinstance(conds[1], CondEqual)
+    assert len(conds[0].conds) == 3
+    assert isinstance(conds[0].conds[0], CondEqual)
+    assert isinstance(conds[0].conds[1], CondFlag)
+    assert isinstance(conds[0].conds[2], CondNotEqual)
+
+def test_search_results_generator():
+    df = DataFrame({
+        "zigzag": [True, True, True, True, True, False, True, True, True],
+        "param-1": [True, True, False, True, True, False, True, True, False],
+        "param-2": [False, True, True, False, False, False, True, True, True]
+    })
+
+    results = []
+    for m in search_results_generator(df, "param-1 or param-2 > param-1 and param-2 > param-1 or param-2"):
+        results.append(m)
+
+    assert results == [(0, 2), (4, 7), (6, 8)]

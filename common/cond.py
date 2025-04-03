@@ -164,7 +164,7 @@ class CondSet(Cond):
         # 論理式を分解する
         logical_exprs_pattern = r'\b(?!and\b)(?!or\b)[\w=\-:\!]+'
         logical_exprs = re.findall(logical_exprs_pattern, cmd)
-        print(logical_exprs)
+
         if len(logical_exprs) == 0:
             raise BadCmdException(f"invalid cmd: {cmd}")
 
@@ -239,3 +239,38 @@ def make_conds(cmds: str) -> list[Cond]:
     conds.reverse()
 
     return conds
+
+
+def search_results_generator(df: DataFrame, cmds: str):
+    # 検索条件オブジェクトの作成
+    conds = make_conds(cmds)
+    if len(conds) <= 0:
+        raise BadCmdException(f"invalid cmd: {cmds}")
+
+    # ジグザグフラグがTrueの箇所のインデックスを取得
+    indexes = df.index[df['zigzag']].tolist()
+    if len(indexes) <= 0:
+        return
+
+    # 先頭行から最終行にかけて条件に一致する行を探す
+    for i, start_index in enumerate(indexes):
+        # 条件と比較するインデックス一覧を取得
+        match_target_indexes = indexes[i:i + len(conds)]
+
+        # 比較対象の行数が残っているかを確認する
+        if len(match_target_indexes) != len(conds):
+            break
+
+        # 全条件と比較対象行を比較する
+        is_matched = False
+        for k, match_target_index in enumerate(match_target_indexes):
+            is_matched = conds[k].match(df, match_target_index)
+            if not is_matched:
+                break
+
+        # 全条件に比較対象行がマッチしたか
+        if not is_matched:
+            # 条件にマッチしなかった場合
+            continue
+
+        yield (start_index, indexes[i + len(conds) - 1])
