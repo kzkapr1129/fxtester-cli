@@ -47,7 +47,7 @@ def main():
     stats_parser = sub_parser.add_parser("stats", help="抵抗帯の情報を検出する", parents=[common_parser])
     stats_kind_parser = stats_parser.add_subparsers(dest="stats_mode", required=True, help="統計の種類")
 
-    stats_delta_parser = stats_kind_parser.add_parser("delta", help="ジグザグ距離を等級別に比較する", parents=[common_parser])
+    stats_delta_parser = stats_kind_parser.add_parser("band", help="ジグザグ変動幅を等級別に比較する", parents=[common_parser])
     stats_delta_parser.add_argument("-i", "--input", type=str, help="入力ファイルのパス (csvまたはjsonが格納されたフォルダ)")
     stats_delta_parser.add_argument("-b", "--bins", type=int, help="等級数を指定する", default=40)
 
@@ -64,8 +64,8 @@ def main():
             importlib.import_module("cmds.detect.detector").Detector(config).main(args)
         case 'stats':
             match args.stats_mode:
-                case 'delta':
-                    importlib.import_module("cmds.stats.delta").Delta(config).main(args)
+                case 'band':
+                    importlib.import_module("cmds.stats.band").StatsBand(config).main(args)
                 case _:
                     print(f"予期しないモードが指定されました: {args.stats_mode}")
                     sys.exit()

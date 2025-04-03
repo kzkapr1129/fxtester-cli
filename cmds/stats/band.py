@@ -5,8 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-class Delta:
-    """ジグザグ距離の統計を行う
+class StatsBand:
+    """ジグザグの変動幅を調べる
 
     抵抗帯の情報を検出する
 
