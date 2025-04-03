@@ -1,5 +1,4 @@
-"""検索条件モジュール
-"""
+"""検索条件モジュール"""
 
 # flake8: noqa
 
@@ -160,34 +159,22 @@ def test_CondEqual_match():
     df = DataFrame()
     assert not CondEqual("param-1==data1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": []
-    })
+    df = DataFrame({"param-1": []})
     assert not CondEqual("param-1==data1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": ["data1"]
-    })
+    df = DataFrame({"param-1": ["data1"]})
     assert CondEqual("param-1==data1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": ["data1", "data2"]
-    })
+    df = DataFrame({"param-1": ["data1", "data2"]})
     assert not CondEqual("param-1==data1").match(df, 1)
 
-    df = DataFrame({
-        "param-1": [1]
-    })
+    df = DataFrame({"param-1": [1]})
     assert not CondEqual("param-1==data1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [1]
-    })
+    df = DataFrame({"param-1": [1]})
     assert CondEqual("param-1==1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [True]
-    })
+    df = DataFrame({"param-1": [True]})
     assert CondEqual("param-1==True").match(df, 0)
 
 
@@ -195,29 +182,19 @@ def test_CondNotEqual_match():
     df = DataFrame()
     assert not CondNotEqual("param-1!=data1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": []
-    })
+    df = DataFrame({"param-1": []})
     assert not CondNotEqual("param-1!=data1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": ["data2"]
-    })
+    df = DataFrame({"param-1": ["data2"]})
     assert CondNotEqual("param-1!=data1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": ["data1"]
-    })
+    df = DataFrame({"param-1": ["data1"]})
     assert not CondNotEqual("param-1!=data1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [1]
-    })
+    df = DataFrame({"param-1": [1]})
     assert CondNotEqual("param-1!=2").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [True]
-    })
+    df = DataFrame({"param-1": [True]})
     assert CondNotEqual("param-1!=False").match(df, 0)
 
 
@@ -225,79 +202,59 @@ def test_CondFlag_match():
     df = DataFrame()
     assert not CondFlag("param-1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": []
-    })
+    df = DataFrame({"param-1": []})
     assert not CondFlag("param-1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [0]
-    })
+    df = DataFrame({"param-1": [0]})
     assert not CondFlag("param-1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [0.0]
-    })
+    df = DataFrame({"param-1": [0.0]})
     assert not CondFlag("param-1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [False]
-    })
+    df = DataFrame({"param-1": [False]})
     assert not CondFlag("param-1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [144]
-    })
+    df = DataFrame({"param-1": [144]})
     assert CondFlag("param-1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [0.12]
-    })
+    df = DataFrame({"param-1": [0.12]})
     assert CondFlag("param-1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [144.0]
-    })
+    df = DataFrame({"param-1": [144.0]})
     assert CondFlag("param-1").match(df, 0)
 
-    df = DataFrame({
-        "param-1": [True]
-    })
+    df = DataFrame({"param-1": [True]})
     assert CondFlag("param-1").match(df, 0)
+
 
 def test_CondAny_match():
     df = DataFrame()
     assert not CondAny("*{1}", CondFlag("param-1")).match(df, 0)
 
-    df = DataFrame({
-        "param-1": []
-    })
+    df = DataFrame({"param-1": []})
     assert not CondAny("*{1}", CondFlag("param-1")).match(df, 0)
 
-    df = DataFrame({
-        "param-1": [False, True]
-    })
+    df = DataFrame({"param-1": [False, True]})
     assert not CondAny("*{1}", CondFlag("param-1")).match(df, 0)
 
-    df = DataFrame({
-        "param-1": [False, True]
-    })
+    df = DataFrame({"param-1": [False, True]})
     assert CondAny("*{2}", CondFlag("param-1")).match(df, 0)
 
-    df = DataFrame({
-        "param-1": [False, False]
-    })
+    df = DataFrame({"param-1": [False, False]})
     assert not CondAny("*{3}", CondFlag("param-1")).match(df, 0)
+
 
 def test_CondSet_match():
     df = DataFrame()
     assert not CondSet("param-1==data1 and param-2==data2").match(df, 0)
 
-    df = DataFrame({
-        "param-1": ["data1-1", "data1-2", "data1-3"],
-        "param-2": ["data2-1", "data2-2", "data2-3"],
-        "param-3": ["data3-1", "data3-2", "data3-3"],
-    })
+    df = DataFrame(
+        {
+            "param-1": ["data1-1", "data1-2", "data1-3"],
+            "param-2": ["data2-1", "data2-2", "data2-3"],
+            "param-3": ["data3-1", "data3-2", "data3-3"],
+        }
+    )
     assert CondSet("param-1==data1-1 and param-2==data2-1").match(df, 0)
     assert not CondSet("param-1==data1-1 and param-2==data2-2").match(df, 0)
     assert not CondSet("param-1==data1-2 and param-2==data2-1").match(df, 0)
@@ -314,6 +271,7 @@ def test_CondSet_match():
     assert not CondSet("param-1==data1-1 and (param-2==data2-2 or param-3==data3-2)").match(df, 0)
     assert not CondSet("param-1==data1-2 and (param-2==data2-1 or param-3==data3-1)").match(df, 0)
 
+
 def test_make_cond():
     cond = make_cond("param-1 and param-2", None)
     assert isinstance(cond, CondSet)
@@ -329,6 +287,7 @@ def test_make_cond():
     assert isinstance(cond, CondFlag)
     cond = make_cond("*{1}", CondFlag("abc"))
     assert isinstance(cond, CondAny)
+
 
 def test_make_conds():
     conds = make_conds("aaa==123")
@@ -369,12 +328,15 @@ def test_make_conds():
     assert isinstance(conds[0].conds[1], CondFlag)
     assert isinstance(conds[0].conds[2], CondNotEqual)
 
+
 def test_search_results_generator():
-    df = DataFrame({
-        "zigzag": [True, True, True, True, True, False, True, True, True],
-        "param-1": [True, True, False, True, True, False, True, True, False],
-        "param-2": [False, True, True, False, False, False, True, True, True]
-    })
+    df = DataFrame(
+        {
+            "zigzag": [True, True, True, True, True, False, True, True, True],
+            "param-1": [True, True, False, True, True, False, True, True, False],
+            "param-2": [False, True, True, False, False, False, True, True, True],
+        }
+    )
 
     results = []
     for m in search_results_generator(df, "param-1 or param-2 > param-1 and param-2 > param-1 or param-2"):

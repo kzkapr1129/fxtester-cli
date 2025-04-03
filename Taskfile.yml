@@ -15,10 +15,10 @@ tasks:
 
   lint:
     cmds:
-      - flake8 --ignore E501
+      - flake8 --ignore E501,E203
   lint:fix:
     cmds:
-      - autopep8 --ignore=E501 . --in-place --recursive
+      - black --line-length 99999 .
 
   test:
     cmds:

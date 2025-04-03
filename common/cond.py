@@ -1,5 +1,4 @@
-"""検索条件モジュール
-"""
+"""検索条件モジュール"""
 
 import re
 import pandas as pd
@@ -8,8 +7,7 @@ from error import BadCmdException
 
 
 class Cond:
-    """検索条件のベースクラス
-    """
+    """検索条件のベースクラス"""
 
     def match(self, df: DataFrame, index: int) -> bool:
         return False
@@ -162,7 +160,7 @@ class CondSet(Cond):
             raise BadCmdException(f"invalid cmd: {cmd}")
 
         # 論理式を分解する
-        logical_exprs_pattern = r'\b(?!and\b)(?!or\b)[\w=\-:\!]+'
+        logical_exprs_pattern = r"\b(?!and\b)(?!or\b)[\w=\-:\!]+"
         logical_exprs = re.findall(logical_exprs_pattern, cmd)
 
         if len(logical_exprs) == 0:
@@ -209,7 +207,7 @@ def make_cond(cmd: str, next_cmd: Cond) -> Cond:
     elif 1 == len(re.findall(r"^[^=<>\{\}\*]+$", cmd)):
         return CondFlag(cmd)
     else:
-        raise BadCmdException(f"\'{cmd}\'")
+        raise BadCmdException(f"'{cmd}'")
 
 
 def make_conds(cmds: str) -> list[Cond]:
@@ -248,14 +246,14 @@ def search_results_generator(df: DataFrame, cmds: str):
         raise BadCmdException(f"invalid cmd: {cmds}")
 
     # ジグザグフラグがTrueの箇所のインデックスを取得
-    indexes = df.index[df['zigzag']].tolist()
+    indexes = df.index[df["zigzag"]].tolist()
     if len(indexes) <= 0:
         return
 
     # 先頭行から最終行にかけて条件に一致する行を探す
     for i, start_index in enumerate(indexes):
         # 条件と比較するインデックス一覧を取得
-        match_target_indexes = indexes[i:i + len(conds)]
+        match_target_indexes = indexes[i : i + len(conds)]
 
         # 比較対象の行数が残っているかを確認する
         if len(match_target_indexes) != len(conds):

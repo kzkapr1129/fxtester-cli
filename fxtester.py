@@ -1,5 +1,4 @@
-"""メインジュール
-"""
+"""メインジュール"""
 
 import argparse
 import sys
@@ -29,8 +28,8 @@ def main():
     analyzer_parser.add_argument("-i", "--input", type=str, help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
     analyzer_parser.add_argument("-o", "--output", type=str, help="出力ファイルのパス")
     analyzer_parser.add_argument("-e", "--ext", choices=["json", "csv"], help="出力ファイルの拡張子")
-    analyzer_parser.add_argument("-g", "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
-    analyzer_parser.add_argument("-s", "--sma", type=int, nargs='*', help="単純移動平均線の平均値を指定する")
+    analyzer_parser.add_argument("-g", "--show-graph", action="store_true", help="検出した特徴をグラフに重畳して表示する")
+    analyzer_parser.add_argument("-s", "--sma", type=int, nargs="*", help="単純移動平均線の平均値を指定する")
     analyzer_parser.add_argument("-k", "--ichimoku", action="store_true", help="一目均衡表を計算する")
     analyzer_parser.add_argument("-z", "--zigzag", action="store_true", help="ジグザグを検出する")
 
@@ -39,7 +38,7 @@ def main():
     detector_parser.add_argument("-i", "--input", type=str, help="入力ファイルのパス (csvまたはcsvが格納されたフォルダ)")
     detector_parser.add_argument("-o", "--output", type=str, help="出力ファイルのパス")
     detector_parser.add_argument("-e", "--ext", choices=["json", "csv"], help="出力ファイルの拡張子", default="json")
-    detector_parser.add_argument("-g", "--show-graph", action='store_true', help="検出した特徴をグラフに重畳して表示する")
+    detector_parser.add_argument("-g", "--show-graph", action="store_true", help="検出した特徴をグラフに重畳して表示する")
     detector_parser.add_argument("-w", "--window", type=int, help="抵抗帯判定に使用するウインドウの幅")
     detector_parser.add_argument("-t", "--threshold", type=float, help="抵抗帯面積率の閾値")
 
@@ -58,13 +57,13 @@ def main():
     config = load_config(Path(args.config))
 
     match args.mode:
-        case 'analyze':
+        case "analyze":
             importlib.import_module("cmds.analyze.analyzer").Analyzer(config).main(args)
-        case 'detect':
+        case "detect":
             importlib.import_module("cmds.detect.detector").Detector(config).main(args)
-        case 'stats':
+        case "stats":
             match args.stats_mode:
-                case 'band':
+                case "band":
                     importlib.import_module("cmds.stats.band").StatsBand(config).main(args)
                 case _:
                     print(f"予期しないモードが指定されました: {args.stats_mode}")

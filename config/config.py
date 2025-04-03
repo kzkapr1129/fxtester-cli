@@ -1,5 +1,4 @@
-"""設定ファイルモジュール
-"""
+"""設定ファイルモジュール"""
 
 from pathlib import Path
 import sys

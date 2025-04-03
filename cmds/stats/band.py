@@ -29,10 +29,8 @@ class StatsBand:
             file_list = [input_path]
         else:
             # フォルダが指定された場合
-            file_list_json = [file for file in input_path.glob(
-                "*.json") if file.is_file()]
-            file_list_csv = [file for file in input_path.glob(
-                "*.csv") if file.is_file()]
+            file_list_json = [file for file in input_path.glob("*.json") if file.is_file()]
+            file_list_csv = [file for file in input_path.glob("*.csv") if file.is_file()]
             file_list = chain(file_list_json, file_list_csv)
 
         for file in file_list:
@@ -43,15 +41,15 @@ class StatsBand:
             elif file.suffix == ".csv":
                 df = pd.read_csv(file, encoding="utf-8")
 
-            df["zigzag-delta-abs"] = df['zigzag-delta'].abs()
+            df["zigzag-delta-abs"] = df["zigzag-delta"].abs()
 
-            data = df.query("0 < `zigzag-delta-abs`").sort_values(by='zigzag-delta-abs', ascending=False)['zigzag-delta-abs'].to_numpy()
+            data = df.query("0 < `zigzag-delta-abs`").sort_values(by="zigzag-delta-abs", ascending=False)["zigzag-delta-abs"].to_numpy()
             bins = np.histogram_bin_edges(data, bins=bins)
             print(bins)
             labels = [f"{float(bins[i]):.3f}-{float(bins[i + 1]):.3f}" for i in range(len(bins) - 1)]
             categories = np.digitize(data, bins, right=True)
             counts = [np.sum(categories == i) for i in range(1, len(bins))]
             plt.figure(figsize=(6, 6))
-            plt.pie(counts, labels=labels, autopct='%1.1f%%', startangle=140, colors=plt.cm.Paired.colors)
-            plt.title('Data Distribution by Grade (Auto-generated bins)')
+            plt.pie(counts, labels=labels, autopct="%1.1f%%", startangle=140, colors=plt.cm.Paired.colors)
+            plt.title("Data Distribution by Grade (Auto-generated bins)")
             plt.show()

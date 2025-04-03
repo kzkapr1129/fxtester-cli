@@ -1,5 +1,4 @@
-"""ジグザグ計算モジュール
-"""
+"""ジグザグ計算モジュール"""
 
 from pandas import DataFrame
 from typing import Any
@@ -14,7 +13,7 @@ def mark_zigzag(df: DataFrame) -> DataFrame:
     Returns:
         DataFrame: ジグザグ情報が書き込まれたデータフレーム
     """
-    df['zigzag'] = False
+    df["zigzag"] = False
     mark_zigzag_peak_to_bottom(df)
     mark_zigzag_bottom_to_peak(df)
     return df
@@ -31,7 +30,7 @@ def mark_zigzag2(df: DataFrame) -> DataFrame:
     Returns:
         DataFrame: ジグザグ情報が書き込まれたデータフレーム
     """
-    df['zigzag'] = False
+    df["zigzag"] = False
 
     # ピークとボトムのどちらが最初に見つからるかをチェックする
     peak = find_peak(df, 0)
@@ -39,50 +38,50 @@ def mark_zigzag2(df: DataFrame) -> DataFrame:
 
     def mark_peak(peak, bottom):
         # 経過時間
-        dx = peak['index'] - bottom['index']
+        dx = peak["index"] - bottom["index"]
         # Y軸のΔ
-        dy = peak['box_max'] - bottom['box_min'] if dx != 0 else 0
+        dy = peak["box_max"] - bottom["box_min"] if dx != 0 else 0
         # 速度を計算
         velocity = dy / dx if dx != 0 else 0
         # マーク付けを行うデータのインデックス取得
-        i = peak['index']
+        i = peak["index"]
         # インデックスの位置にマーク付けを行う
-        df.loc[i, 'zigzag'] = True
-        df.loc[i, 'zigzag-kind'] = "peak"
-        df.loc[i, 'zigzag-from'] = bottom['index']
-        df.loc[i, 'zigzag-velocity'] = velocity
-        df.loc[i, 'zigzag-delta'] = dy
-        df.loc[i, 'zigzag-peak-price'] = peak['box_max']
+        df.loc[i, "zigzag"] = True
+        df.loc[i, "zigzag-kind"] = "peak"
+        df.loc[i, "zigzag-from"] = bottom["index"]
+        df.loc[i, "zigzag-velocity"] = velocity
+        df.loc[i, "zigzag-delta"] = dy
+        df.loc[i, "zigzag-peak-price"] = peak["box_max"]
 
     def mark_bottom(bottom, peak):
         # 経過時間
-        dx = bottom['index'] - peak['index']
+        dx = bottom["index"] - peak["index"]
         # Y軸のΔ
-        dy = bottom['box_min'] - peak['box_max'] if dx != 0 else 0
+        dy = bottom["box_min"] - peak["box_max"] if dx != 0 else 0
         # 速度を計算
         velocity = dy / dx if dx != 0 else 0
         # マーク付けを行うデータのインデックス取得
-        i = bottom['index']
+        i = bottom["index"]
         # インデックスの位置にマーク付けを行う
-        df.loc[i, 'zigzag'] = True
-        df.loc[i, 'zigzag-kind'] = "bottom"
-        df.loc[i, 'zigzag-from'] = peak['index']
-        df.loc[i, 'zigzag-velocity'] = velocity
-        df.loc[i, 'zigzag-delta'] = dy
-        df.loc[i, 'zigzag-bottom-price'] = bottom['box_min']
+        df.loc[i, "zigzag"] = True
+        df.loc[i, "zigzag-kind"] = "bottom"
+        df.loc[i, "zigzag-from"] = peak["index"]
+        df.loc[i, "zigzag-velocity"] = velocity
+        df.loc[i, "zigzag-delta"] = dy
+        df.loc[i, "zigzag-bottom-price"] = bottom["box_min"]
 
     # 仮のジグザグを用意
     first = {
-        'index': 0,
-        'box_max': calc_box_max(df, 0),
-        'box_min': calc_box_min(df, 0),
+        "index": 0,
+        "box_max": calc_box_max(df, 0),
+        "box_min": calc_box_min(df, 0),
     }
 
     row_index = 0
     last_bottom = None
     # ボトムが最初に見つかったかチェックする
-    if bottom['index'] < peak['index']:
-        row_index = bottom['start']
+    if bottom["index"] < peak["index"]:
+        row_index = bottom["start"]
         mark_bottom(bottom, first)  # インデックス0を仮のピークとする
         last_bottom = bottom
     else:
@@ -94,14 +93,14 @@ def mark_zigzag2(df: DataFrame) -> DataFrame:
         # ピークを探す
         peak = find_peak(df, row_index)
         # ボトムを探す
-        bottom = find_bottom(df, peak['start'])
+        bottom = find_bottom(df, peak["start"])
 
         # ピークとボトムのマーク付け
         mark_peak(peak, last_bottom)
         mark_bottom(bottom, peak)
 
         # 次の探索開始位置を設定
-        row_index = bottom['start']
+        row_index = bottom["start"]
         last_bottom = bottom
 
     return df
@@ -121,29 +120,29 @@ def mark_zigzag_peak_to_bottom(df):
         # 高値更新が止まった場所を探す
         peak = find_peak(df, row_index)
         # 安値更新が止まった場所を探す
-        bottom = find_bottom(df, peak['start'])
+        bottom = find_bottom(df, peak["start"])
 
-        if bottom['index'] <= peak['index']:
+        if bottom["index"] <= peak["index"]:
             # グラフが高値更新しかしていない場合、`peakIndex == bottomIndex`となる可能性がある。
             # この場合は検出なしとして処理する
             break
 
         # 経過時間
-        x = bottom['index'] - peak['index']
+        x = bottom["index"] - peak["index"]
         # Y軸のΔ
-        y = bottom['box_min'] - peak['box_max']
+        y = bottom["box_min"] - peak["box_max"]
         # 速度を計算
         velocity = y / x
 
-        i = peak['index']
-        df.loc[i, 'zigzag'] = True
-        df.loc[i, 'zigzag-kind'] = "peak"
-        df.loc[i, 'zigzag-to'] = bottom['index']
-        df.loc[i, 'zigzag-velocity'] = velocity
-        df.loc[i, 'zigzag-delta'] = y
-        df.loc[i, 'zigzag-peak-price'] = peak['box_max']
+        i = peak["index"]
+        df.loc[i, "zigzag"] = True
+        df.loc[i, "zigzag-kind"] = "peak"
+        df.loc[i, "zigzag-to"] = bottom["index"]
+        df.loc[i, "zigzag-velocity"] = velocity
+        df.loc[i, "zigzag-delta"] = y
+        df.loc[i, "zigzag-peak-price"] = peak["box_max"]
 
-        row_index = bottom['index'] + 1
+        row_index = bottom["index"] + 1
 
 
 def mark_zigzag_bottom_to_peak(df):
@@ -160,29 +159,29 @@ def mark_zigzag_bottom_to_peak(df):
         # 安値更新が止まった場所を探す
         bottom = find_bottom(df, row_index)
         # 高値更新が止まった場所を探す
-        peak = find_peak(df, bottom['start'])
+        peak = find_peak(df, bottom["start"])
 
-        if peak['index'] <= bottom['index']:
+        if peak["index"] <= bottom["index"]:
             # グラフが安値更新しかしていない場合、`peakIndex == bottomIndex`となる可能性がある。
             # この場合は検出なしとして処理する
             break
 
         # 経過時間
-        x = peak['index'] - bottom['index']
+        x = peak["index"] - bottom["index"]
         # Y軸のΔ
-        y = peak['box_max'] - bottom['box_min']
+        y = peak["box_max"] - bottom["box_min"]
         # 速度を計算
         velocity = y / x
 
-        i = bottom['index']
-        df.loc[i, 'zigzag'] = True
-        df.loc[i, 'zigzag-kind'] = "bottom"
-        df.loc[i, 'zigzag-to'] = peak['index']
-        df.loc[i, 'zigzag-velocity'] = velocity
-        df.loc[i, 'zigzag-delta'] = y
-        df.loc[i, 'zigzag-bottom-price'] = bottom['box_min']
+        i = bottom["index"]
+        df.loc[i, "zigzag"] = True
+        df.loc[i, "zigzag-kind"] = "bottom"
+        df.loc[i, "zigzag-to"] = peak["index"]
+        df.loc[i, "zigzag-velocity"] = velocity
+        df.loc[i, "zigzag-delta"] = y
+        df.loc[i, "zigzag-bottom-price"] = bottom["box_min"]
 
-        row_index = peak['index'] + 1
+        row_index = peak["index"] + 1
 
 
 def find_peak(df: DataFrame, start: int) -> dict[str:Any]:
@@ -200,12 +199,7 @@ def find_peak(df: DataFrame, start: int) -> dict[str:Any]:
 
     peak_index = start
     if len(df) <= peak_index + 1:
-        return {
-            "index": peak_index,
-            "start": peak_index,
-            "box_min": calc_box_min(df, peak_index),
-            "box_max": calc_box_max(df, peak_index)
-        }
+        return {"index": peak_index, "start": peak_index, "box_min": calc_box_min(df, peak_index), "box_max": calc_box_max(df, peak_index)}
 
     last_index = peak_index
     for i in range(peak_index + 1, len(df)):
@@ -247,12 +241,7 @@ def find_peak(df: DataFrame, start: int) -> dict[str:Any]:
             # プログラムのミスまたは検討不足な問題(包含関係ではないので十字線はあり得ない)
             raise Exception("Program error")
 
-    return {
-        "index": peak_index,
-        "start": last_index,
-        "box_min": calc_box_min(df, peak_index),
-        "box_max": calc_box_max(df, peak_index)
-    }
+    return {"index": peak_index, "start": last_index, "box_min": calc_box_min(df, peak_index), "box_max": calc_box_max(df, peak_index)}
 
 
 def find_bottom(df: DataFrame, start: int) -> dict:
@@ -270,12 +259,7 @@ def find_bottom(df: DataFrame, start: int) -> dict:
 
     bottom_index = start
     if len(df) <= bottom_index + 1:
-        return {
-            "index": bottom_index,
-            "start": bottom_index,
-            "box_min": calc_box_min(df, bottom_index),
-            "box_max": calc_box_max(df, bottom_index)
-        }
+        return {"index": bottom_index, "start": bottom_index, "box_min": calc_box_min(df, bottom_index), "box_max": calc_box_max(df, bottom_index)}
 
     last_index = bottom_index
     for i in range(bottom_index + 1, len(df)):
@@ -317,12 +301,7 @@ def find_bottom(df: DataFrame, start: int) -> dict:
             # プログラムのミスまたは検討不足な問題(包含関係ではないので十字線はあり得ない)
             raise Exception("Program error")
 
-    return {
-        "index": bottom_index,
-        "start": last_index,
-        "box_min": calc_box_min(df, bottom_index),
-        "box_max": calc_box_max(df, bottom_index)
-    }
+    return {"index": bottom_index, "start": last_index, "box_min": calc_box_min(df, bottom_index), "box_max": calc_box_max(df, bottom_index)}
 
 
 def calc_box_min(df, i) -> float:
@@ -335,8 +314,8 @@ def calc_box_min(df, i) -> float:
     Returns:
         float: ローソク足の実体の安値
     """
-    open = df.loc[i, 'open'].astype(float)
-    close = df.loc[i, 'close'].astype(float)
+    open = df.loc[i, "open"].astype(float)
+    close = df.loc[i, "close"].astype(float)
     return min(open, close)
 
 
@@ -350,8 +329,8 @@ def calc_box_max(df, i) -> float:
     Returns:
         float: ローソク足の実体の高値
     """
-    open = df.loc[i, 'open'].astype(float)
-    close = df.loc[i, 'close'].astype(float)
+    open = df.loc[i, "open"].astype(float)
+    close = df.loc[i, "close"].astype(float)
     return max(open, close)
 
 
@@ -393,8 +372,8 @@ def is_positive(df, i):
     Returns:
         bool: 陽線か否かのフラグ値
     """
-    open = df.loc[i, 'open']
-    close = df.loc[i, 'close']
+    open = df.loc[i, "open"]
+    close = df.loc[i, "close"]
     return open < close
 
 
@@ -408,8 +387,8 @@ def is_negative(df, i):
     Returns:
         bool: 陰線か否かのフラグ値
     """
-    open = df.loc[i, 'open']
-    close = df.loc[i, 'close']
+    open = df.loc[i, "open"]
+    close = df.loc[i, "close"]
     return close < open
 
 
