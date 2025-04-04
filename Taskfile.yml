@@ -22,6 +22,10 @@ tasks:
 
   test:
     cmds:
+      - pytest .
+
+  test:cover:
+    cmds:
       - |
         coverage run -m pytest
         coverage report -m
