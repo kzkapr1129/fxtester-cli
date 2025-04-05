@@ -24,6 +24,10 @@ tasks:
     cmds:
       - pytest .
 
+  test:out:
+    cmds:
+      - pytest -s .
+
   test:cover:
     cmds:
       - |
