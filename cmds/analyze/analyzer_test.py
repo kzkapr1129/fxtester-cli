@@ -83,8 +83,7 @@ def test_Analyzer_main_out_csv(tmp_path):
     df = pd.read_csv(output_file)
 
     # カラムの確認
-    assert len(df.columns) == 8
-    assert "index" in df.columns
+    assert len(df.columns) == 7
     assert "datetime" in df.columns
     assert "open" in df.columns
     assert "high" in df.columns
@@ -163,8 +162,7 @@ def test_Analyzer_main_csv_indicator(tmp_path):
     df = pd.read_csv(output_file)
 
     # カラムの確認
-    assert len(df.columns) == 22
-    assert "index" in df.columns
+    assert len(df.columns) == 21
     assert "datetime" in df.columns
     assert "open" in df.columns
     assert "high" in df.columns
@@ -205,8 +203,7 @@ def test_Analyzer_main_input_folder(tmp_path):
     df = pd.read_csv(output_file)
 
     # カラムの確認
-    assert len(df.columns) == 22
-    assert "index" in df.columns
+    assert len(df.columns) == 21
     assert "datetime" in df.columns
     assert "open" in df.columns
     assert "high" in df.columns

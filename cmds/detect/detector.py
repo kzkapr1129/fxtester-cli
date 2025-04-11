@@ -188,7 +188,7 @@ class Detector:
                 if output_ext == "json":
                     data = df.to_json(orient="records", date_format="iso", date_unit="s", indent=4)
                 elif output_ext == "csv":
-                    data = df.to_csv(index=True, index_label="index")
+                    data = df.to_csv(index=False)
                 output_full_path = Path(output_path) / Path(file.stem + f".{output_ext}")
                 output_full_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(output_full_path, mode="w") as f:
