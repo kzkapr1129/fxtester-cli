@@ -37,7 +37,7 @@ def check_output(output_file: Path):
         df = pd.read_json(output_file)
     elif output_file.suffix == ".csv":
         df = pd.read_csv(output_file)
-    assert len(df.columns) == 38
+    assert len(df.columns) == 39
     assert "datetime" in df.columns
     assert "open" in df.columns
     assert "high" in df.columns
@@ -62,20 +62,21 @@ def check_output(output_file: Path):
     assert "sma-50" in df.columns
     assert "sma-75" in df.columns
     assert "sma-100" in df.columns
-    assert "resistance-point" in df.columns
-    assert "resistance-point-sma-20" in df.columns
-    assert "resistance-point-sma-25" in df.columns
-    assert "resistance-point-sma-50" in df.columns
-    assert "resistance-point-sma-75" in df.columns
-    assert "resistance-point-sma-100" in df.columns
-    assert "resistance-point-ichimoku_senkou_span_1" in df.columns
-    assert "resistance-point-ichimoku_senkou_span_2" in df.columns
-    assert "origin-up" in df.columns
-    assert "origin-up-rate" in df.columns
-    assert "origin-up-dist" in df.columns
-    assert "origin-down" in df.columns
-    assert "origin-down-rate" in df.columns
-    assert "origin-down-dist" in df.columns
+    assert "reflection" in df.columns
+    assert "reflection-from-sma-20" in df.columns
+    assert "reflection-from-sma-25" in df.columns
+    assert "reflection-from-sma-50" in df.columns
+    assert "reflection-from-sma-75" in df.columns
+    assert "reflection-from-sma-100" in df.columns
+    assert "reflection-from-ichimoku_senkou_span_1" in df.columns
+    assert "reflection-from-ichimoku_senkou_span_2" in df.columns
+    assert "breakout" in df.columns
+    assert "breakout-top" in df.columns
+    assert "breakout-top-rate" in df.columns
+    assert "breakout-top-dist" in df.columns
+    assert "breakout-bottom" in df.columns
+    assert "breakout-bottom-rate" in df.columns
+    assert "breakout-bottom-dist" in df.columns
 
 def test_Detector_main_out_json(tmp_path):
     output_file = tmp_path / "USDJPYH1.json"

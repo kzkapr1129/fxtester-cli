@@ -25,7 +25,7 @@ def show(df: DataFrame, title: str = ""):
     # カラム名から抵抗帯を取得する
     resistance_points = []
     for column in dfc.columns:
-        if re.match(r"^resistance-point-.+$", column):
+        if re.match(r"^reflection-from-.+$", column):
             resistance_points.append(column)
 
     apds = []
@@ -43,8 +43,8 @@ def show(df: DataFrame, title: str = ""):
     zigzag_inputs = [
         {"name": "zigzag-peak-price", "marker": "v", "color": "red"},
         {"name": "zigzag-bottom-price", "marker": "^", "color": "blue"},
-        {"name": "origin-down", "marker": "v", "color": "green"},
-        {"name": "origin-up", "marker": "^", "color": "yellow"},
+        {"name": "breakout-bottom", "marker": "v", "color": "green"},
+        {"name": "breakout-top", "marker": "^", "color": "yellow"},
         *[{"name": name, "marker": "o", "color": "gold"} for name in resistance_points],
     ]
 

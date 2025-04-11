@@ -19,10 +19,10 @@ def test_mark_breakout():
     mark_zigzag2(df)
     mark_breakout(df)
 
-    assert df.index[pd.notna(df["origin-down"])].to_list() == [5]
-    assert df.index[pd.notna(df["origin-up"])].to_list() == [8]
-    assert equals_nan_array(df["origin-up-rate"].to_list(), [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 1.25, np.nan, np.nan, np.nan, np.nan, np.nan])
-    assert equals_nan_array(df["origin-up-dist"].to_list(), [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 5.0, np.nan, np.nan, np.nan, np.nan, np.nan])
-    assert equals_nan_array(df["origin-down-rate"].to_list(), [np.nan, np.nan, np.nan, np.nan, np.nan, 1.3333333333333333, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan])
-    assert equals_nan_array(df["origin-down-dist"].to_list(), [np.nan, np.nan, np.nan, np.nan, np.nan, 4.0, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan])
+    assert df.index[pd.notna(df["breakout-bottom"])].to_list() == [5]
+    assert df.index[pd.notna(df["breakout-top"])].to_list() == [8]
+    assert equals_nan_array(df["breakout-top-rate"].to_list(), [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 1.25, np.nan, np.nan, np.nan, np.nan, np.nan])
+    assert equals_nan_array(df["breakout-top-dist"].to_list(), [np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, 5.0, np.nan, np.nan, np.nan, np.nan, np.nan])
+    assert equals_nan_array(df["breakout-bottom-rate"].to_list(), [np.nan, np.nan, np.nan, np.nan, np.nan, 1.3333333333333333, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan])
+    assert equals_nan_array(df["breakout-bottom-dist"].to_list(), [np.nan, np.nan, np.nan, np.nan, np.nan, 4.0, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan])
 

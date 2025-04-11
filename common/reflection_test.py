@@ -16,8 +16,8 @@ def test_mark_reflection_bottom_reflection():
     mark_zigzag2(df)
     mark_reflection(df, ["sma"], 1, 0.5)
 
-    assert df.index[df["resistance-point"]].to_list() == [8]
-    assert df.index[pd.notna(df["resistance-point-sma"])].to_list() == [8]
+    assert df.index[df["reflection"]].to_list() == [8]
+    assert df.index[pd.notna(df["reflection-from-sma"])].to_list() == [8]
 
 def test_mark_reflection_top_reflection():
     df = DataFrame(
@@ -32,5 +32,5 @@ def test_mark_reflection_top_reflection():
     mark_zigzag2(df)
     mark_reflection(df, ["sma"], 1, 0.5)
 
-    assert df.index[df["resistance-point"]].to_list() == [0, 12]
-    assert df.index[pd.notna(df["resistance-point-sma"])].to_list() == [0, 12]
+    assert df.index[df["reflection"]].to_list() == [0, 12]
+    assert df.index[pd.notna(df["reflection-from-sma"])].to_list() == [0, 12]

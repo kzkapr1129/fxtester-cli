@@ -9,7 +9,7 @@ def mark_reflection(df: DataFrame, target_resistance_band_names: list[str], wind
     zigzag_indices = df.index[df["zigzag"]].tolist() if "zigzag" in df.columns else []
 
     # 抵抗帯ポイント列の初期化
-    df["resistance-point"] = False
+    df["reflection"] = False
 
     # 抵抗帯として認識されたインジケータを検出する
     # ジグザグマークの箇所をループ
@@ -75,6 +75,6 @@ def mark_reflection(df: DataFrame, target_resistance_band_names: list[str], wind
 
             if found:
                 # dataframeに抵抗帯をマーク
-                df.loc[zigzag_idx, "resistance-point"] = True
-                df.loc[zigzag_idx, f"resistance-point-{target_resistance_band_name}"] = df.loc[zigzag_idx, target_resistance_band_name]
+                df.loc[zigzag_idx, "reflection"] = True
+                df.loc[zigzag_idx, f"reflection-from-{target_resistance_band_name}"] = df.loc[zigzag_idx, target_resistance_band_name]
     return df
