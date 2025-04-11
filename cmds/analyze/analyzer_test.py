@@ -2,6 +2,7 @@ from analyzer import Analyzer
 import pandas as pd
 import os
 import re
+from pathlib import Path
 
 test_folder = os.path.join(os.path.join(os.path.dirname(__file__), "test"))
 test_file_path = os.path.join(os.path.join(os.path.dirname(__file__), "test"), "USDJPYH1.csv")
@@ -28,6 +29,61 @@ class MockArgs:
         self.ichimoku = False
         self.zigzag = False
 
+def check_output(output_file: Path, args: MockArgs):
+    if output_file.suffix == ".json":
+        df = pd.read_json(output_file)
+    elif output_file.suffix == ".csv":
+        df = pd.read_csv(output_file)
+
+    expect_columns = 7
+    if args.zigzag:
+        expect_columns += 7
+    if 0 < len(args.sma):
+        expect_columns += len(args.sma)
+    if args.ichimoku:
+        expect_columns += 5
+
+    # カラムの確認
+    assert len(df.columns) == expect_columns
+    assert "datetime" in df.columns
+    assert "open" in df.columns
+    assert "high" in df.columns
+    assert "low" in df.columns
+    assert "close" in df.columns
+    assert "tick" in df.columns
+    assert "volume" in df.columns
+
+    if args.zigzag:
+        assert "zigzag" in df.columns
+        assert "zigzag-kind" in df.columns
+        assert "zigzag-from" in df.columns
+        assert "zigzag-velocity" in df.columns
+        assert "zigzag-delta" in df.columns
+        assert "zigzag-peak-price" in df.columns
+    else:
+        assert "zigzag" not in df.columns
+        assert "zigzag-kind" not in df.columns
+        assert "zigzag-from" not in df.columns
+        assert "zigzag-velocity" not in df.columns
+        assert "zigzag-delta" not in df.columns
+        assert "zigzag-peak-price" not in df.columns
+
+    if args.ichimoku:
+        assert "ichimoku_kijun_sen" in df.columns
+        assert "ichimoku_tenkan_sen" in df.columns
+        assert "ichimoku_senkou_span_1" in df.columns
+        assert "ichimoku_senkou_span_2" in df.columns
+        assert "ichimoku_chikou_span" in df.columns
+    else:
+        assert "ichimoku_kijun_sen" not in df.columns
+        assert "ichimoku_tenkan_sen" not in df.columns
+        assert "ichimoku_senkou_span_1" not in df.columns
+        assert "ichimoku_senkou_span_2" not in df.columns
+        assert "ichimoku_chikou_span" not in df.columns
+
+    for average in args.sma:
+        assert f"sma-{average}" in df.columns
+
 def test_Analyzer_main_out_json(tmp_path):
     output_file = tmp_path / "USDJPYH1.json"
     args = MockArgs()
@@ -42,29 +98,7 @@ def test_Analyzer_main_out_json(tmp_path):
     assert os.path.exists(output_file)
 
     # 出力ファイルの内容確認
-    df = pd.read_json(output_file)
-
-    # カラムの確認
-    assert len(df.columns) == 7
-    assert "datetime" in df.columns
-    assert "open" in df.columns
-    assert "high" in df.columns
-    assert "low" in df.columns
-    assert "close" in df.columns
-    assert "tick" in df.columns
-    assert "volume" in df.columns
-    assert "zigzag" not in df.columns
-    assert "zigzag-kind" not in df.columns
-    assert "zigzag-from" not in df.columns
-    assert "zigzag-velocity" not in df.columns
-    assert "zigzag-delta" not in df.columns
-    assert "zigzag-peak-price" not in df.columns
-    assert "ichimoku_kijun_sen" not in df.columns
-    assert "ichimoku_tenkan_sen" not in df.columns
-    assert "ichimoku_senkou_span_1" not in df.columns
-    assert "ichimoku_senkou_span_2" not in df.columns
-    assert "ichimoku_chikou_span" not in df.columns
-    assert len(list(filter(lambda x: re.match(r"sma-\d+", x) is not None, df.columns))) == 0
+    check_output(output_file, args)
 
 def test_Analyzer_main_out_csv(tmp_path):
     output_file = tmp_path / "USDJPYH1.csv"
@@ -80,29 +114,7 @@ def test_Analyzer_main_out_csv(tmp_path):
     assert os.path.exists(output_file)
 
     # 出力ファイルの内容確認
-    df = pd.read_csv(output_file)
-
-    # カラムの確認
-    assert len(df.columns) == 7
-    assert "datetime" in df.columns
-    assert "open" in df.columns
-    assert "high" in df.columns
-    assert "low" in df.columns
-    assert "close" in df.columns
-    assert "tick" in df.columns
-    assert "volume" in df.columns
-    assert "zigzag" not in df.columns
-    assert "zigzag-kind" not in df.columns
-    assert "zigzag-from" not in df.columns
-    assert "zigzag-velocity" not in df.columns
-    assert "zigzag-delta" not in df.columns
-    assert "zigzag-peak-price" not in df.columns
-    assert "ichimoku_kijun_sen" not in df.columns
-    assert "ichimoku_tenkan_sen" not in df.columns
-    assert "ichimoku_senkou_span_1" not in df.columns
-    assert "ichimoku_senkou_span_2" not in df.columns
-    assert "ichimoku_chikou_span" not in df.columns
-    assert len(list(filter(lambda x: re.match(r"sma-\d+", x) is not None, df.columns))) == 0
+    check_output(output_file, args)
 
 def test_Analyzer_main_json_indicator(tmp_path):
     output_file = tmp_path / "USDJPYH1.json"
@@ -118,31 +130,7 @@ def test_Analyzer_main_json_indicator(tmp_path):
     assert os.path.exists(output_file)
 
     # 出力ファイルの内容確認
-    df = pd.read_json(output_file)
-
-    # カラムの確認
-    assert len(df.columns) == 21
-    assert "datetime" in df.columns
-    assert "open" in df.columns
-    assert "high" in df.columns
-    assert "low" in df.columns
-    assert "close" in df.columns
-    assert "tick" in df.columns
-    assert "volume" in df.columns
-    assert "zigzag" in df.columns
-    assert "zigzag-kind" in df.columns
-    assert "zigzag-from" in df.columns
-    assert "zigzag-velocity" in df.columns
-    assert "zigzag-delta" in df.columns
-    assert "zigzag-peak-price" in df.columns
-    assert "zigzag-bottom-price" in df.columns
-    assert "ichimoku_kijun_sen" in df.columns
-    assert "ichimoku_tenkan_sen" in df.columns
-    assert "ichimoku_senkou_span_1" in df.columns
-    assert "ichimoku_senkou_span_2" in df.columns
-    assert "ichimoku_chikou_span" in df.columns
-    assert "sma-20" in df.columns
-    assert "sma-50" in df.columns
+    check_output(output_file, args)
 
 
 def test_Analyzer_main_csv_indicator(tmp_path):
@@ -159,31 +147,7 @@ def test_Analyzer_main_csv_indicator(tmp_path):
     assert os.path.exists(output_file)
 
     # 出力ファイルの内容確認
-    df = pd.read_csv(output_file)
-
-    # カラムの確認
-    assert len(df.columns) == 21
-    assert "datetime" in df.columns
-    assert "open" in df.columns
-    assert "high" in df.columns
-    assert "low" in df.columns
-    assert "close" in df.columns
-    assert "tick" in df.columns
-    assert "volume" in df.columns
-    assert "zigzag" in df.columns
-    assert "zigzag-kind" in df.columns
-    assert "zigzag-from" in df.columns
-    assert "zigzag-velocity" in df.columns
-    assert "zigzag-delta" in df.columns
-    assert "zigzag-peak-price" in df.columns
-    assert "zigzag-bottom-price" in df.columns
-    assert "ichimoku_kijun_sen" in df.columns
-    assert "ichimoku_tenkan_sen" in df.columns
-    assert "ichimoku_senkou_span_1" in df.columns
-    assert "ichimoku_senkou_span_2" in df.columns
-    assert "ichimoku_chikou_span" in df.columns
-    assert "sma-20" in df.columns
-    assert "sma-50" in df.columns
+    check_output(output_file, args)
 
 def test_Analyzer_main_input_folder(tmp_path):
     output_file = tmp_path / "USDJPYH1.csv"
@@ -200,28 +164,4 @@ def test_Analyzer_main_input_folder(tmp_path):
     assert os.path.exists(output_file)
 
     # 出力ファイルの内容確認
-    df = pd.read_csv(output_file)
-
-    # カラムの確認
-    assert len(df.columns) == 21
-    assert "datetime" in df.columns
-    assert "open" in df.columns
-    assert "high" in df.columns
-    assert "low" in df.columns
-    assert "close" in df.columns
-    assert "tick" in df.columns
-    assert "volume" in df.columns
-    assert "zigzag" in df.columns
-    assert "zigzag-kind" in df.columns
-    assert "zigzag-from" in df.columns
-    assert "zigzag-velocity" in df.columns
-    assert "zigzag-delta" in df.columns
-    assert "zigzag-peak-price" in df.columns
-    assert "zigzag-bottom-price" in df.columns
-    assert "ichimoku_kijun_sen" in df.columns
-    assert "ichimoku_tenkan_sen" in df.columns
-    assert "ichimoku_senkou_span_1" in df.columns
-    assert "ichimoku_senkou_span_2" in df.columns
-    assert "ichimoku_chikou_span" in df.columns
-    assert "sma-20" in df.columns
-    assert "sma-50" in df.columns
+    check_output(output_file, args)
